@@ -6,11 +6,11 @@ public class Cat
     public static final double MAX_WEIGHT =9000.0;
     private double originWeight;
     private double weight;
-
     private double minWeight;
     private double maxWeight;
     private double feedWeight;    //чтобы отслеживать изменения веса кота
     public static int count;       // количество котов
+
 
     public Cat()
     {
@@ -18,7 +18,17 @@ public class Cat
         originWeight = weight;
         minWeight = MIN_WEIGHT;        // здесь им самое место.
         maxWeight = MAX_WEIGHT;
-        feedWeight = 0.0; //новосозданный кот пока не успел покушать
+        feedWeight = 0.0;      //новосозданный кот пока не успел покушать
+        count++;
+    }
+
+    public Cat(double weight)                   //второй конструктор
+    {
+        this.weight = weight;
+        originWeight = weight;
+        minWeight = MIN_WEIGHT;
+        maxWeight = MAX_WEIGHT;
+        feedWeight = 0.0;
         count++;
     }
 

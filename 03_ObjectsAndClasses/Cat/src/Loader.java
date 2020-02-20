@@ -56,5 +56,13 @@ public class Loader
         Cat nasty = new Cat();
         System.out.println("Осталось живых котов: " + Cat.getCount());
         catArray[0].pee();
+
+        Cat kitty = getKitten();  // проверяем, удалось ли получить котёнка
+        System.out.println("Вес нового кота равен:" + kitty.getWeight());
+    }
+
+    private static Cat getKitten()  //создаём класс получить котёнка
+    {
+        return new Cat(1100.00);
     }
 }
