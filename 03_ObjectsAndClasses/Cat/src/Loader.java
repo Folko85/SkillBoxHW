@@ -3,7 +3,8 @@ public class Loader
 {
     public static void main(String[] args)
     {
-        int catQuantity = 5;     //количество котов
+        Cat.count = 0;         //счётчик котов. Пока котов нет
+        int catQuantity = 5;     //сколько котов мы будем создавать изначально
 
         Cat[] catArray = new Cat[catQuantity];  //чтобы не объявлять каждого кота отдельно, поместим их в массив
 
@@ -38,7 +39,8 @@ public class Loader
         }
 
         // Проверяем задание ко второму уроку модуля
-
+        System.out.println("Осталось живых котов: " + Cat.getCount());
+        System.out.println("Создадим ещё одного кота");
         Cat tasty = new Cat();
         tasty.feed(150.00);
         tasty.pee();
@@ -47,5 +49,12 @@ public class Loader
 
         System.out.println("Кот съел " + tasty.getEaten());
 
+        //Проверяем задание к третьему уроку
+
+        System.out.println("Осталось живых котов: " + Cat.getCount());
+        System.out.println("Создадим ещё одного кота");
+        Cat nasty = new Cat();
+        System.out.println("Осталось живых котов: " + Cat.getCount());
+        catArray[0].pee();
     }
 }
