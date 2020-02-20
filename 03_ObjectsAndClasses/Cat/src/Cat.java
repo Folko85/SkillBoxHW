@@ -6,6 +6,7 @@ public class Cat
 
     private double minWeight;
     private double maxWeight;
+    private double feedWeight;    //чтобы отслеживать изменения веса кота
 
     public Cat()
     {
@@ -13,6 +14,7 @@ public class Cat
         originWeight = weight;
         minWeight = 1000.0;
         maxWeight = 9000.0;
+        feedWeight = 0.0; //новосозданный кот пока не успел покушать
 
     }
 
@@ -25,6 +27,7 @@ public class Cat
     public void feed(Double amount)
     {
         weight = weight + amount;
+        feedWeight = feedWeight + amount;        // фиксируем каждое кормление
     }
 
     public void drink(Double amount)
@@ -52,4 +55,17 @@ public class Cat
             return "Playing";
         }
     }
+
+    public void pee()               // метод сходить в туалет
+    {
+        weight = weight - 2;
+        System.out.println("Oops!!!");
+    }
+
+    public Double getEaten()   //метод съедено
+    {
+        return feedWeight;
+    }
+
+
 }

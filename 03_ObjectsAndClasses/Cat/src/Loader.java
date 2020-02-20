@@ -18,15 +18,15 @@ public class Loader
         System.out.println("Вес первого кота теперь равен " + catArray[0].getWeight());
         System.out.println("Вес второго кота теперь равен " + catArray[1].getWeight());
 
-        while (catArray[0].getStatus() != "Exploded")
+        while (! catArray[0].getStatus().equals("Exploded"))
         {
             catArray[0].feed(1.0);       //кормим кота пока он не взовётся
         }
         System.out.println("Первый кот взорвался.");
 
-        while (catArray[1].getStatus() != "Dead")
+        while (! catArray[1].getStatus().equals("Dead"))
         {
-            catArray[1].meow();                  // заставляем мяукать
+            catArray[1].meow();                  // заставляем мяукать пока не умрёт
         }
         System.out.println("Второй кот умер.");
 
@@ -37,10 +37,15 @@ public class Loader
             System.out.println("Текущее состояние кота " + (i+1) + ": " + catArray[i].getStatus());   // проверяем состояние котов после экспериментов
         }
 
+        // Проверяем задание ко второму уроку модуля
 
+        Cat tasty = new Cat();
+        tasty.feed(150.00);
+        tasty.pee();
+        tasty.pee();
+        tasty.pee();
 
-
-
+        System.out.println("Кот съел " + tasty.getEaten());
 
     }
 }
