@@ -1,6 +1,9 @@
 
 public class Cat
 {
+    public static final int EYES_COUNT = 2;          //создаём константы по заданию
+    public static final double MIN_WEIGHT =1000.0;
+    public static final double MAX_WEIGHT =9000.0;
     private double originWeight;
     private double weight;
 
@@ -13,8 +16,8 @@ public class Cat
     {
         weight = 1500.0 + 3000.0 * Math.random();
         originWeight = weight;
-        minWeight = 1000.0;
-        maxWeight = 9000.0;
+        minWeight = MIN_WEIGHT;        // здесь им самое место.
+        maxWeight = MAX_WEIGHT;
         feedWeight = 0.0; //новосозданный кот пока не успел покушать
         count++;
     }
