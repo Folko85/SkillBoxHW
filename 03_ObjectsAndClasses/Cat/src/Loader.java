@@ -59,6 +59,14 @@ public class Loader
 
         Cat kitty = getKitten();  // проверяем, удалось ли получить котёнка
         System.out.println("Вес нового кота равен:" + kitty.getWeight());
+
+        //Проверяем задание к шестому уроку
+
+        for (int i = 0; i < catQuantity; i++)
+        {
+            System.out.println("Окрас кота " + (i+1) + " получился: " + catArray[i].getCatColor());   // проверим окрас котов
+        }
+
     }
 
     private static Cat getKitten()  //создаём класс получить котёнка

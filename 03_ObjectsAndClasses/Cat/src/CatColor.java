@@ -1,3 +1,5 @@
+import java.util.Random;
+
 public enum CatColor
 {
     BLACK,
@@ -5,5 +7,10 @@ public enum CatColor
     WHITE,
     GREY,
     BLUE,
-    MIXED
+    MIXED;
+
+    public static CatColor getRandomColor() {           //добавляем этот метод, чтобы иметь возможность
+        Random random = new Random();                    // создавать котов случайного цвета
+        return values()[random.nextInt(values().length)];
+    }
 }

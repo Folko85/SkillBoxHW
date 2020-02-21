@@ -10,6 +10,7 @@ public class Cat
     private double maxWeight;
     private double feedWeight;    //чтобы отслеживать изменения веса кота
     public static int count;       // количество котов
+    private CatColor catColor;     // здесь мы будем хранить окрас котов
 
 
     public Cat()
@@ -20,6 +21,7 @@ public class Cat
         maxWeight = MAX_WEIGHT;
         feedWeight = 0.0;      //новосозданный кот пока не успел покушать
         count++;
+        catColor = CatColor.getRandomColor();  // получаем кота случайного цвета
     }
 
     public Cat(double weight)                   //второй конструктор
@@ -30,6 +32,7 @@ public class Cat
         maxWeight = MAX_WEIGHT;
         feedWeight = 0.0;
         count++;
+        catColor = CatColor.getRandomColor();
     }
 
     public void meow()
@@ -120,5 +123,15 @@ public class Cat
     public static int getCount()   // возвращаем количество котов
     {
         return count;
+    }
+
+    public CatColor getCatColor()                //геттер окраса кота
+    {
+        return catColor;
+    }
+
+    public void setCatColor(CatColor сolor)    //сеттер окраса кота
+    {
+        this.catColor = сolor;
     }
 }
