@@ -66,7 +66,14 @@ public class Loader
         {
             System.out.println("Окрас кота " + (i+1) + " получился: " + catArray[i].getCatColor());   // проверим окрас котов
         }
-
+                 //проверяем 7е задание
+        catArray[0].setCatColor(CatColor.GREY);           // чтобы не путаться, зададим цвет коту
+        Cat copy = new Cat(catArray[0]);
+        System.out.println("Цвет изначального кота " + catArray[0].getCatColor());
+        System.out.println("Цвет скопированного кота " + copy.getCatColor());
+        catArray[0].setCatColor(CatColor.BLACK);   // перекрашиваем кота
+        System.out.println("Цвет изначального кота " + catArray[0].getCatColor());
+        System.out.println("Цвет скопированного кота " + copy.getCatColor());
     }
 
     private static Cat getKitten()  //создаём класс получить котёнка

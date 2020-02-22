@@ -35,6 +35,19 @@ public class Cat
         catColor = CatColor.getRandomColor();
     }
 
+    // 7й урок. Создание копии объекта
+    public Cat (Cat original)                //конструктор создания копии
+    {
+        this.weight = original.weight;
+        this.originWeight = original.weight;     //предположи, что кот успел поесть перед копированием
+        this.minWeight = MIN_WEIGHT;
+        this.maxWeight = MAX_WEIGHT;
+        this.feedWeight = 0.0;                    //новосозданный считается новым котом, он ничего не ел
+        count++;
+        this.catColor = original.catColor;
+
+    }
+
     public void meow()
     {
         if (weight <= minWeight || weight >= maxWeight)
