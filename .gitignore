@@ -1,1 +1,10 @@
 .DS_Store
+03_ObjectsAndClasses/Cat/.idea/
+03_ObjectsAndClasses/Cat/out/
+03_ObjectsAndClasses/Airport/.idea/
+03_ObjectsAndClasses/Airport/out/
+03_ObjectsAndClasses/RoadController/.idea/
+03_ObjectsAndClasses/RoadController/out/
+*.iml
+*.xml
+
