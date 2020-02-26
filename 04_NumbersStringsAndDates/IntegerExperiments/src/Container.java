@@ -1,4 +1,4 @@
 public class Container
-{
-    public Integer count;
+{                              // неинициализированная переменная рана 0, а неинициализированный объект равен null
+    public int count;         // к null нельзя прибавить число.
 }
