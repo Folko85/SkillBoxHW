@@ -1,47 +1,46 @@
 public class Cargo
 {
     private int cargoNumber;
-    private String cargoName;
-    private static int maxTonnageCargo = 12; //вместимость статична. Чтобы не создавать объект для её изменения
-    private int tonnageCargo;
+    private static int tonnageCargo = 12; //вместимость статична. Чтобы не создавать объект для её изменения
     private Container[] containerCount ;  // массив контейнеров в грузовике
 
     public Cargo(int number)
     {
-        this.cargoNumber = number;
-        this.cargoName = "Грузовик " + (number + 1);
-        this.tonnageCargo = maxTonnageCargo;
-        this.containerCount = new Container[tonnageCargo];  // каждому контейнеру соответствует массив ящиков
+        this.cargoNumber = number + 1;
+        this.containerCount = new Container[tonnageCargo];  // каждому грузовику соответствует массив контейнеров
     }
 
-    public Cargo(int number, int tonnage)         // метод для неполных грузовиков
-    {
-        this(number);
-        this.tonnageCargo = tonnage;
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Грузовик " + this.cargoNumber + "\n");
+
+        for (int i = 0; i < tonnageCargo; i++) {
+            if (containerCount[i] != null) {
+                builder.append("\t" + this.containerCount[i]);  // здесь выходил бы двойной перевод строки, что некрасиво
+            }
+        }
+
+        return builder.toString();
     }
 
-    public String getCargoName()
+    public static void setTonnageCargo(int maxTonnage)       //меняем вместимость грузовика
     {
-        return this.cargoName;
+        tonnageCargo = maxTonnage;
     }
 
-    public static void setMaxTonnageCargo(int maxTonnage)
+    public static int getTonnageCargo()            // узнаём вместимость грузовика
     {
-        maxTonnageCargo = maxTonnage;
+        return tonnageCargo;
     }
 
-    public static int getMaxTonnageCargo()
+    public void addContainerToCargo(Container[] allContainers)
     {
-        return maxTonnageCargo;
-    }
-
-    public void addContainerToCargo(Container[] allContainers, Crate[] allCrates)
-    {
-        for (int i = 0; i < tonnageCargo; i++)
+        for (int i = 0; i < allContainers.length; i++)
         {
-            this.containerCount[i] = allContainers[(this.cargoNumber * maxTonnageCargo) + i];
-            System.out.println("\t" + this.containerCount[i].getContainerName());
-            this.containerCount[i].addCratesToContainer(allCrates);         // для каждого контейнера выводим ящики
+            if (i < (this.cargoNumber * tonnageCargo) && i >= ((this.cargoNumber - 1) * tonnageCargo) ) {
+                this.containerCount[i - ((this.cargoNumber - 1) * tonnageCargo)] = allContainers[i];
+            }
         }
     }
 }

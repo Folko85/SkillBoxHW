@@ -5,16 +5,17 @@
 public class Crate
 {
     private String crateName;
-    private int number;
+    private int crateNumber;
 
     public Crate(int number)
     {
-        this.number = number;
-        this.crateName = "Ящик " + (number + 1);
+        this.crateNumber = number + 1;
     }
 
-    public String getCrateName()
-    {
-        return this.crateName;
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("Ящик " + this.crateNumber);
+        return builder.toString();
     }
 }
