@@ -15,45 +15,51 @@ public class Loader {
         }
         // Предположим, что конструкция предложения неизменна (иначе вообще фиг что выяснишь)
         String text = "Вася заработал 5000 рублей, Петя - 7563 рубля, а Маша - 30000 рублей";
-        String[] parts = text.split(",");   // разделяем предложение на части
         int sumOfSalary = 0;          /// сюда будем складывать деньги
-        String salary = "";
+        String onlyNumbers = clearInput(text, "[\\D+\\s+]").trim();
+        String[] parts = onlyNumbers.split(" ");   // разделим оклады по пробелам
+        int salary = 0;                          //вспомогательная переменная, где будут содержаться оклады
         for (int i = 0; i < parts.length; i++) {
-            if (parts[i].indexOf("Вася") >= 0 || parts[i].indexOf("Маша") >= 0)  //Находим часть строки, повествующую о героях
-            {
-                for (int j = 0; j < parts[i].length(); j++) {
-                    if (Character.isDigit(parts[i].charAt(j))) {
-                        salary += parts[i].charAt(j);  // и извлекаем оттуда оклад
-                    } else {                         // цифры закончились
-                        if (!salary.isEmpty())       // если мы смогли что-то вычленить,
-                        {
-                            sumOfSalary += Integer.parseInt(salary); // прибавляем к общей сумме
-                            salary = "";         // и обнуляем
-                        }
-                    }
-                }
-            }
+            salary = Integer.parseInt(parts[i]);
+            sumOfSalary += salary;
         }
-        System.out.println(salary);
-        System.out.println("Сумма окладов Васи и Маши: " + sumOfSalary);
-        System.out.println("Введите ФИО:");
-        Scanner fio = new Scanner(System.in);
+        System.out.println("Сумма всех окладов: " + sumOfSalary);
 
-        String yourName = fio.nextLine().trim();           //  уберём лишние пробелы по краям
-        String clearName = clearName(yourName);            // уберём мусор
+
+        // разбивка текста
+        String bigText = "Tastes differ. That’s why all people wear different clothes. Besides they wear different clothes when it is warm and cold." +
+                " When it is cold we put on sweaters, coats, caps and gloves. When it’s warm we take off warm clothes and put on light shirts or blouses and dresses." +
+                " My favourite clothes are jeans, shirts and sweaters or jackets. They are comfortable. And I can wear them in any weather." +
+                " Now I’m wearing jeans, a white shirt and a sweater. But tomorrow is my friend’s birthday. He invited me to the birthday party. So I shall be in my best.";
+        bigText = clearInput(bigText, "[-.?!)(,:]");
+        String[] wordsOfBigText = bigText.split(" ");
+        for (int j = 0; j < wordsOfBigText.length; j++) {
+            System.out.println(wordsOfBigText[j]);
+        }
+        System.out.println("Введите ФИО:");
+        Scanner scanner = new Scanner(System.in);
+        String yourName = scanner.nextLine().trim();           //  уберём лишние пробелы по краям
+        String clearName = clearInput(yourName, " -");            // уберём мусор
         String checkName = checkName(clearName);           //проверим корректность введённой информации
         System.out.println(checkName);                    // выведем на экран
+        System.out.println("Введите номер телефона:");
+        String telephone = scanner.nextLine().trim();
+        telephone = telephone.replaceAll("[^0-9+]", "");
+        if (telephone.length() == 11 && telephone.indexOf('+') < 0 && telephone.charAt(0) == '8') {    //формат с первой восьмёркой
+            System.out.println("Номер телефона: +7 " + telephone.substring(1, 4) + " " + telephone.substring(4, 7) +
+                    "-" + telephone.substring(7, 9) + "-" + telephone.substring(9, 11));
+        } else if ((telephone.length() == 12 && telephone.indexOf('+') == 0)) {
+            System.out.println("Номер телефона: " + telephone.substring(0, 2) + telephone.substring(2, 5) + " " + telephone.substring(5, 8) +  // формат с первым плюсом
+                    "-" + telephone.substring(8, 10) + "-" + telephone.substring(10, 12));
+        } else {
+            System.out.println("Некорректный номер телефона");    // всё остальное
+        }
     }
 
-    public static String clearName(String name)   //очищаем строку от случайно введённых знаков
+    public static String clearInput(String name, String regex)   //очищаем строку от случайно введённых знаков
     {
-        while (name.indexOf("  ") >= 0) {
-            name = name.replace("  ", " ");//  избавимся от задвоенных пробелов в центре
-        }
-
-        while (name.indexOf(" -") >= 0) {
-            name = name.replace(" -", " ");//  избавимся от дефисов в начале имени
-        }
+        name = name.replaceAll(regex, " ");  // избавляемся от лишних знаков
+        name = name.replaceAll("\\s+", " ");//  избавимся от задвоенных/троенных и т.д. пробелов в центре
         return name;
     }
 
