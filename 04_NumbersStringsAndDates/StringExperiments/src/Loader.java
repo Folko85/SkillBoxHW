@@ -1,6 +1,6 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,6 +72,37 @@ public class Loader {
                     "-" + resultTelephone.substring(8, 10) + "-" + resultTelephone.substring(10, 12));
         } else {
             System.out.println("Некорректный номер телефона");    // всё остальное
+        }
+
+        // Сюда же добавим последнее задание с датами. Их ведь тоже можно вводить
+        Calendar today = Calendar.getInstance();           // текущая дата
+        Calendar myBorn = Calendar.getInstance();          // день рождения будем вводить из консоли
+        SimpleDateFormat format = new SimpleDateFormat("dd-MM-yyyy");   // формат в котором принимаем дату, максимально простой
+        SimpleDateFormat outFormat = new SimpleDateFormat("dd MMMM yyyy - EEEE", Locale.forLanguageTag("ru"));  //формат вывода, вестимо на русском
+        System.out.println("Введите дату рождения в формате dd-MM-yyyy");
+        String birthDay = scanner.nextLine();
+        Pattern date = Pattern.compile("([\\d]{2})[-]([\\d]{2})[-]([\\d]{4})");    //в этом деле требуется точный ввод
+        Matcher dateMatcher = date.matcher(birthDay);
+        int yourAge = 0;          // введём дополнительную переменную, чтобы фиксировать возраст
+        if (dateMatcher.find()) {
+            if ((Integer.parseInt(dateMatcher.group(1)) <= 31) && Integer.parseInt(dateMatcher.group(2)) <= 12) {  // грубая проверка корректности ввода числа и месяца
+                try {                                                                 //// устанавливаем введённую дату в календарь и распечатываем все годовщины
+                    for (myBorn.setTime(format.parse(dateMatcher.group())); myBorn.before(today); myBorn.add(Calendar.YEAR, 1))
+                    {
+                        System.out.println(yourAge + " - " + outFormat.format(myBorn.getTime()));
+                        yourAge++;
+                    }
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+             //   System.out.println(outFormat.format(myBorn.getTime()));
+              //  System.out.println(outFormat.format(today.getTime()));
+            } else {
+                System.out.println("Вы ввели некорректную дату");
+            }
+        } else {
+            System.out.println("Вы ввели дату в неверном формате");
         }
     }
 
