@@ -1,5 +1,7 @@
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -87,17 +89,38 @@ public class Loader {
         if (dateMatcher.find()) {
             if ((Integer.parseInt(dateMatcher.group(1)) <= 31) && Integer.parseInt(dateMatcher.group(2)) <= 12) {  // грубая проверка корректности ввода числа и месяца
                 try {                                                                 //// устанавливаем введённую дату в календарь и распечатываем все годовщины
-                    for (myBorn.setTime(format.parse(dateMatcher.group())); myBorn.before(today); myBorn.add(Calendar.YEAR, 1))
-                    {
+                    for (myBorn.setTime(format.parse(dateMatcher.group())); myBorn.before(today); myBorn.add(Calendar.YEAR, 1)) {
                         System.out.println(yourAge + " - " + outFormat.format(myBorn.getTime()));
                         yourAge++;
                     }
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
+            } else {
+                System.out.println("Вы ввели некорректную дату");
+            }
+        } else {
+            System.out.println("Вы ввели дату в неверном формате");
+        }
 
-             //   System.out.println(outFormat.format(myBorn.getTime()));
-              //  System.out.println(outFormat.format(today.getTime()));
+        // Решаем задачу с датами другими методами и с помощью других классов. Структура кода осталась почти той же.
+        LocalDate todayDate = LocalDate.now();       // текущая дата
+        LocalDate birthdayDate;                     //день рождения, пока просто объявляем
+        DateTimeFormatter outputFormat = DateTimeFormatter.ofPattern("dd MMMM yyyy - EEEE", new Locale("ru"));
+        System.out.println("Введите дату рождения в формате dd-MM-yyyy");
+        String birthdayString = scanner.nextLine();
+        Pattern inputDate = Pattern.compile("([\\d]{2})[-]([\\d]{2})[-]([\\d]{4})");    //в этом деле требуется точный ввод
+        Matcher inputDateMatcher = inputDate.matcher(birthdayString);
+        int yourAgeNow = 0;          // введём дополнительную переменную, чтобы фиксировать возраст
+        if (inputDateMatcher.find()) {
+            if ((Integer.parseInt(dateMatcher.group(1)) <= 31) && Integer.parseInt(dateMatcher.group(2)) <= 12) {  // грубая проверка корректности ввода числа и месяца
+                int dayDate = Integer.parseInt(inputDateMatcher.group(1));
+                int monthDate = Integer.parseInt(inputDateMatcher.group(2));
+                int yearDate = Integer.parseInt(inputDateMatcher.group(3));       // устанавливаем введённую дату в календарь и распечатываем все годовщины
+                for (birthdayDate = LocalDate.of(yearDate, monthDate, dayDate); birthdayDate.isBefore(todayDate); birthdayDate = birthdayDate.plusYears(1)) {
+                    System.out.println(yourAgeNow + " - " + outputFormat.format(birthdayDate));
+                    yourAgeNow++;
+                }
             } else {
                 System.out.println("Вы ввели некорректную дату");
             }
