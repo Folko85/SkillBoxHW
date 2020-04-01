@@ -68,8 +68,12 @@ public class Main {
     public static void add(String email) {
         if (email != null)  // проверяем, введён ли email
         {
-            emailSet.add(email.trim());
-            System.out.println("Адрес электронной почты добавлен");
+            if (emailSet.contains(email.trim())) {
+                System.out.println("Вы уже вводили этот адрес электронной почты. Не надо так делать!!!");
+            } else {
+                emailSet.add(email.trim());
+                System.out.println("Адрес электронной почты добавлен");
+            }
         } else {
             System.out.println("Вы не ввели корректного адреса e-mail");
         }
