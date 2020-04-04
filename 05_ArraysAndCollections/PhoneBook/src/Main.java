@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class Main {
     private static Pattern phoneText = Pattern.compile("(\\s*)?(\\+)?([- ()]?\\d+[- ()]?){10,14}(\\s*)?"); //используем регулярку для телефона с проверкой возможно вводимого мусора
-    private static Pattern nameText = Pattern.compile("([a-zA-Zа-яА-ЯёЁ\\s\\-]+)");            //оставим для имени буквы, пробел с дефисом, цифры запретим, чтоб не путаться
+    private static Pattern nameText = Pattern.compile("([a-zA-Zа-яА-ЯёЁ -]+)");            //оставим для имени буквы, пробел с дефисом, цифры запретим, чтоб не путаться
     private static HashMap<String, String> phoneBook = new HashMap<>();               // два зеркальных хешмапа - залог простоты кода.
     private static HashMap<String, String> contactBook = new HashMap<>();
     // поскольку приходится часто возвращаться к началу цикла или прерывать цикл, то введём несколько флагов типа boolean, которые будут регулировать это
@@ -24,7 +24,7 @@ public class Main {
             String inputOne = scanner.nextLine();
             Matcher matcherText = nameText.matcher(inputOne);
             Matcher matcherPhone = phoneText.matcher(inputOne);
-            if (matcherText.find() || matcherPhone.find()) {             // введённое должно подходить хотя бы под одну регулярку
+            if (matcherText.find()) {             // не будем придумывать лишних регулярок, команда тоже текст
                 if (isCommand(inputOne)) {                             //а теперь уже сортируем
                     switch (matcherText.group()) {
                         case ("LIST"):
@@ -49,32 +49,34 @@ public class Main {
                             break;
                     }
                     continue;
-                } else if (isPhone(inputOne))                       //сперва проверяем, ввёл ли пользователь номер телефона
-                {
-                    phoneNumber = normalize(matcherPhone.group());                // все номера приводим к единому формату
-                    System.out.println(checkPhone(phoneNumber));
-                    if (isPhoneBad || isPhoneExist) {
-                        continue;                            // если номер некорректен или уже есть, то повторяем цикл
-                    }
-                    System.out.println("Теперь введите имя контакта:");
-                    boolean isNameEntering = true;
-                    while (isNameEntering) {
-                        String inputTwo = scanner.nextLine();
-                        Matcher matcherName = nameText.matcher(inputTwo);
-                        if (matcherName.find()) {
-                            if (isName(inputTwo)) {
-                                contactName = matcherName.group();
-                                System.out.println(checkName(contactName));
-                                if (isNameExist) {
-                                    continue;                                // если имя существует, просим ввести другое
+                } else if (matcherPhone.find()) {
+                    if (isPhone(inputOne))                       //сперва проверяем, ввёл ли пользователь номер телефона
+                    {
+                        phoneNumber = normalize(matcherPhone.group());                // все номера приводим к единому формату
+                        System.out.println(checkPhone(phoneNumber));
+                        if (isPhoneBad || isPhoneExist) {
+                            continue;                            // если номер некорректен или уже есть, то повторяем цикл
+                        }
+                        System.out.println("Теперь введите имя контакта:");
+                        boolean isNameEntering = true;
+                        while (isNameEntering) {
+                            String inputTwo = scanner.nextLine();
+                            Matcher matcherName = nameText.matcher(inputTwo);
+                            if (matcherName.find()) {
+                                if (isName(inputTwo)) {
+                                    contactName = matcherName.group();
+                                    System.out.println(checkName(contactName));
+                                    if (isNameExist) {
+                                        continue;                                // если имя существует, просим ввести другое
+                                    }
+                                    phoneBook.put(phoneNumber, contactName);      // возможно это преждевременная оптимизация, но нафига городить сложные схемы,
+                                    contactBook.put(contactName, phoneNumber);    //  если можно просто создать два ассоциативных массива и не париться.
+                                    System.out.println("Контакт сохранён в телефонной книге. Введите следующий контакт или команду.");
+                                    isNameEntering = false;                // если имя введено корректно, то покидаем вложенный цикл
                                 }
-                                phoneBook.put(phoneNumber, contactName);      // возможно это преждевременная оптимизация, но нафига городить сложные схемы,
-                                contactBook.put(contactName, phoneNumber);    //  если можно просто создать два ассоциативных массива и не париться.
-                                System.out.println("Контакт сохранён в телефонной книге. Введите следующий контакт или команду.");
-                                isNameEntering = false;                // если имя введено корректно, то покидаем вложенный цикл
+                            } else {
+                                System.out.println("Вы ввели что-то не то. Имя контакта может оодержать только буквы, дефис и пробел. Попробуйте снова:");
                             }
-                        } else {
-                            System.out.println("Вы ввели что-то не то. Имя контакта может оодержать только буквы, дефис и пробел. Попробуйте снова:");
                         }
                     }
                 } else if (isName(inputOne)) {
