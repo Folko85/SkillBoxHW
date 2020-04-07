@@ -9,22 +9,50 @@ public class Main {
     private static Pattern nameText = Pattern.compile("([a-zA-Zа-яА-ЯёЁ -]+)");            //оставим для имени буквы, пробел с дефисом, цифры запретим, чтоб не путаться
     private static HashMap<String, String> phoneBook = new HashMap<>();               // два зеркальных хешмапа - залог простоты кода.
     private static HashMap<String, String> contactBook = new HashMap<>();
-    // поскольку приходится часто возвращаться к началу цикла или прерывать цикл, то введём несколько флагов типа boolean, которые будут регулировать это
-    private static boolean isPhoneBad = false;
-    private static boolean isPhoneExist = false;
-    private static boolean isNameExist = false;
 
     public static void main(String[] args) throws IOException {
         System.out.println("Введите данные контакта или команду:");
         Scanner scanner = new Scanner(System.in);
-        String phoneNumber = new String();
-        String contactName = new String();
+        String phoneNumber = "";
+        String contactName = "";
         boolean workIsActive = true;
         while (workIsActive) {
             String inputOne = scanner.nextLine();
             Matcher matcherText = nameText.matcher(inputOne);
             Matcher matcherPhone = phoneText.matcher(inputOne);
-            if (matcherText.find()) {             // не будем придумывать лишних регулярок, команда тоже текст
+            if (matcherPhone.find()) {
+                phoneNumber = normalize(matcherPhone.group());                // все номера приводим к единому формату
+                if (!checkPhone(phoneNumber)) {
+                    System.out.println("Номер телефона должен состоять из знака + и 11 цифр, введите корректный номер телефона");
+                    continue;                            // если номер некорректен, то повторяем цикл
+                } else if (phoneBook.containsKey(phoneNumber)) {
+                    String contact = phoneBook.get(phoneNumber);
+                    System.out.println("Номер " + phoneNumber + " уже есть в базе и принадлежит контакту " + contact + ". Повторите ввод:");
+                    continue;                            // если номер или уже есть , то повторяем цикл
+                }
+                System.out.println("Теперь введите имя контакта:");
+                boolean isNameEntering = true;
+                while (isNameEntering) {
+                    String inputTwo = scanner.nextLine();
+                    Matcher matcherName = nameText.matcher(inputTwo);
+                    if (matcherName.find()) {
+                        if (isName(inputTwo)) {
+                            contactName = matcherName.group();
+                            if (contactBook.containsKey(contactName)) {
+                                String number = contactBook.get(contactName);
+                                System.out.println("Имя " + contactName + " уже есть в базе и соответствует номеру " + number + ". Повторите ввод:");
+                                continue;                                // если имя существует, просим ввести другое
+                            }
+                            phoneBook.put(phoneNumber, contactName);      // возможно это преждевременная оптимизация, но нафига городить сложные схемы,
+                            contactBook.put(contactName, phoneNumber);    //  если можно просто создать два ассоциативных массива и не париться.
+                            System.out.println("Контакт сохранён в телефонной книге. Введите следующий контакт или команду.");
+                            isNameEntering = false;                // если имя введено корректно, то покидаем вложенный цикл
+                        }
+                    } else {
+                        System.out.println("Вы ввели что-то не то. Имя контакта может оодержать только буквы, дефис и пробел. Попробуйте снова:");
+                    }
+                }
+            } else if (matcherText.find()) {             // не будем придумывать лишних регулярок, команда тоже текст
                 if (isCommand(inputOne)) {                             //а теперь уже сортируем
                     switch (matcherText.group()) {
                         case ("LIST"):
@@ -49,51 +77,27 @@ public class Main {
                             break;
                     }
                     continue;
-                } else if (matcherPhone.find()) {
-                    if (isPhone(inputOne))                       //сперва проверяем, ввёл ли пользователь номер телефона
-                    {
-                        phoneNumber = normalize(matcherPhone.group());                // все номера приводим к единому формату
-                        System.out.println(checkPhone(phoneNumber));
-                        if (isPhoneBad || isPhoneExist) {
-                            continue;                            // если номер некорректен или уже есть, то повторяем цикл
-                        }
-                        System.out.println("Теперь введите имя контакта:");
-                        boolean isNameEntering = true;
-                        while (isNameEntering) {
-                            String inputTwo = scanner.nextLine();
-                            Matcher matcherName = nameText.matcher(inputTwo);
-                            if (matcherName.find()) {
-                                if (isName(inputTwo)) {
-                                    contactName = matcherName.group();
-                                    System.out.println(checkName(contactName));
-                                    if (isNameExist) {
-                                        continue;                                // если имя существует, просим ввести другое
-                                    }
-                                    phoneBook.put(phoneNumber, contactName);      // возможно это преждевременная оптимизация, но нафига городить сложные схемы,
-                                    contactBook.put(contactName, phoneNumber);    //  если можно просто создать два ассоциативных массива и не париться.
-                                    System.out.println("Контакт сохранён в телефонной книге. Введите следующий контакт или команду.");
-                                    isNameEntering = false;                // если имя введено корректно, то покидаем вложенный цикл
-                                }
-                            } else {
-                                System.out.println("Вы ввели что-то не то. Имя контакта может оодержать только буквы, дефис и пробел. Попробуйте снова:");
-                            }
-                        }
-                    }
                 } else if (isName(inputOne)) {
                     contactName = matcherText.group();
-                    System.out.println(checkName(contactName));
-                    if (isNameExist) {
+                    if (contactBook.containsKey(contactName)) {
+                        String number = contactBook.get(contactName);
+                        System.out.println("Имя " + contactName + " уже есть в базе и соответствует номеру " + number + ". Повторите ввод:");
                         continue;                                // если имя существует, просим ввести другое
                     }
                     System.out.println("Введите номер телефона:");
                     boolean isPhoneEntering = true;
                     while (isPhoneEntering) {
                         String inputTwoAlter = scanner.nextLine();
-                        if (isPhone(inputTwoAlter)) {
-                            phoneNumber = normalize(inputTwoAlter);
-                            System.out.println(checkPhone(phoneNumber));
-                            if (isPhoneBad || isPhoneExist) {
-                                continue;                            // если номер некорректен или уже есть, то повторяем цикл
+                        Matcher matcherPhoneAlt = phoneText.matcher(inputTwoAlter);
+                        if (matcherPhoneAlt.find()) {
+                            phoneNumber = normalize(matcherPhoneAlt.group());
+                            if (!checkPhone(phoneNumber)) {
+                                System.out.println("Номер телефона должен состоять из знака + и 11 цифр, введите корректный номер телефона");
+                                continue;                            // если номер некорректен, то повторяем цикл
+                            } else if (phoneBook.containsKey(phoneNumber)) {
+                                String contact = phoneBook.get(phoneNumber);
+                                System.out.println("Номер " + phoneNumber + " уже есть в базе и принадлежит контакту " + contact + ". Повторите ввод:");
+                                continue;                            // если номер или уже есть , то повторяем цикл
                             }
                             phoneBook.put(phoneNumber, contactName);
                             contactBook.put(contactName, phoneNumber);
@@ -108,16 +112,7 @@ public class Main {
                 System.out.println("Что вы ввели? Это не имя, не номер и не команда. Не надо так!!! Попробуйте снова:");
             }
         }
-    }
 
-    public static boolean isPhone(String input)   // метод проверяет, является ли строка номером телефона
-    {
-        Matcher phoneMatcher = phoneText.matcher(input);
-        if (phoneMatcher.find()) {
-            return true;
-        } else {
-            return false;
-        }
     }
 
     public static boolean isName(String input)   // метод проверяет, является ли строка корректным именем
@@ -156,34 +151,12 @@ public class Main {
         return normalNumber;    // выходной формат максимально простой. Только + и цифры.
     }
 
-    public static String checkPhone(String phone) {
-        if (phone.length() != 12)   // отсекаем все некорректные номера. Если ты из-за рубежа - купи русскую симку.
+    public static boolean checkPhone(String phone) {
+        if (phone.length() == 12)   // отсекаем все некорректные номера. Если ты из-за рубежа - купи русскую симку.
         {
-            isPhoneBad = true;
-            return "Номер телефона должен состоять из знака + и 11 цифр, введите корректный номер телефона";
-        } else if (phoneBook.containsKey(phone)) {        //проверяем, есть ли номер в базе
-            isPhoneBad = false;
-            isPhoneExist = true;
-            String contact = phoneBook.get(phone);
-            String number = contactBook.get(contact);
-            return "Номер " + number + " уже есть в базе и принадлежит контакту " + contact + ". Повторите ввод:";
+            return true;
         } else {
-            isPhoneBad = false;
-            isPhoneExist = false;
-            return "Вы ввели номер телефона.";
-        }
-    }
-
-    public static String checkName(String contact)           // оставим пользователю небольшую свободу именования. Проверяем лишь дубли
-    {
-        if (contactBook.containsKey(contact)) {
-            isNameExist = true;
-            String number = contactBook.get(contact);
-            String name = phoneBook.get(number);
-            return "Имя " + name + " уже есть в базе и соответствует номеру " + number + ". Повторите ввод:";
-        } else {
-            isNameExist = false;
-            return "Вы ввели имя контакта.";
+            return false;
         }
     }
 
