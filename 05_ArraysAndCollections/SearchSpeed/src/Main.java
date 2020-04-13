@@ -10,12 +10,11 @@ public class Main {
         ArrayList<String> arraySign = new ArrayList<>();          //список для хранения знаков
         String[] chars = new String[]{"А", "В", "Е", "К", "М", "Н", "О", "Р", "С", "Т", "У", "Х"};   // буквы, используемые в Российских номерах
         Arrays.stream(chars).forEach(                            //прилежные ученики используют всю силу StreamAPI и мудрость предыдущих обитателей чатика
-                letterA -> IntStream.range(1, 9).forEach(
+                letterA -> IntStream.range(1, 10).forEach(
                         num -> Arrays.stream(chars).forEach(
                                 letterB -> Arrays.stream(chars).forEach(
-                                        letterC -> IntStream.range(1, 199).forEach(          // реальные коды регионов - чересполосица случайных цифр. Не будем излишне усложнять,
-                                                region -> arraySign.add(letterA + num + num + num + letterB + letterC + region)
-                                                //region -> System.out.println(letterA + num + num + num + letterB + letterC + region)
+                                        letterC -> IntStream.range(1, 200).forEach(          // реальные коды регионов - чересполосица случайных цифр. Не будем излишне усложнять,
+                                                region -> arraySign.add(letterA + num + num + num + letterB + letterC + String.format("%03d", region))
                                         )
                                 )
                         )
@@ -23,7 +22,7 @@ public class Main {
 
         );
         System.out.println("Количество знаков в списке: " + arraySign.size());
-        Collections.sort(arraySign);                 // сортируем список
+        // сортировка не нужна, ведь мы правильно сформировали список.
         HashSet hashSign = new HashSet(arraySign);
         TreeSet treeSign = new TreeSet(arraySign);     //множества создаём на основе списков
 
