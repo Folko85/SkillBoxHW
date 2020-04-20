@@ -22,5 +22,7 @@
 05_ArraysAndCollections/PhoneBook/out/
 05_ArraysAndCollections/SearchSpeed/.idea/
 05_ArraysAndCollections/SearchSpeed/out/
+out/
+.idea/
 *.iml
 
