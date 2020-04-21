@@ -15,15 +15,9 @@ public class CardBankAccount extends BankAccount {
     }
 
 // если метод не меняется, то нет смысла и переопределять его
-
+    @Override
     public void withdraw(double money) {
         double commission = money * this.withdrawPercent / 100;
-        if (this.balance >= money + commission) {
-            this.balance -= money + commission;
-            System.out.println("Вы успешно сняли со счёта сумму " + money + ". Комиссия за снятие денег равна " + commission);
-        } else {
-            System.out.println("На вашем счёте недостаточно денег");
-        }
-
+        super.withdraw(money + commission);
     }
 }
