@@ -1,5 +1,7 @@
 package clients;
 
+import java.math.BigDecimal;
+
 public class BusinessPerson extends Person {    // сделаем индивидуального предпринимателя наследником физического лица, потому что "так можно"
 
     private final double LITTLE_COMMISSION = 0.005;  //нет смысла вставлять комиссию в конструктор, ведь она зависит от суммы
@@ -10,13 +12,20 @@ public class BusinessPerson extends Person {    // сделаем индивид
     }
 
     @Override
-    public void deposit(double money) {
-        if (money < 1000) {
-            super.deposit(money - (money * BIG_COMMISSION));
-            System.out.println("Комиссия составила " + money * BIG_COMMISSION);
+    public void deposit(BigDecimal money) {
+        BigDecimal commission = this.getDepositCommission(money);  // вычисляем комиссию в зависимости от вносимой суммы
+        super.deposit(money.subtract(commission));  // добавляем на баланс вносимую сумму за вычетом комисии
+        System.out.println("Комиссия составила " + commission);
+    }
+
+    @Override
+    public BigDecimal getDepositCommission(BigDecimal amount) {
+        BigDecimal commission;
+        if (amount.compareTo(BigDecimal.valueOf(1000)) < 0) {
+            commission = amount.multiply(BigDecimal.valueOf(BIG_COMMISSION));
         } else {
-            super.deposit(money - (money * LITTLE_COMMISSION));
-            System.out.println("Комиссия составила " + money * LITTLE_COMMISSION);
+            commission = amount.multiply(BigDecimal.valueOf(LITTLE_COMMISSION));
         }
+        return commission;
     }
 }

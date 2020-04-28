@@ -1,15 +1,16 @@
 package clients;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Company extends AbstractClient {
-    private final double COMMISSION = 0.01;
+    private final double COMMISSION_PERCENT = 0.01;
     private BigInteger inn;
 
     public Company (String title, BigInteger inn)    // раз уж это компания, то надо указывать ИНН
     {
-        this.balance = 0.0;
+        this.balance = BigDecimal.valueOf(0.0);
         this.ownerName = title;             // в классе не делаем никаких проверок ввода, это будет в основной программе (если будет)
         this.inn = inn;
         StringBuilder accNumbers = new StringBuilder();  // идея ругается(warning) на конструкцию String += string. Воспользуемся изменяемым объектом.
@@ -19,16 +20,22 @@ public class Company extends AbstractClient {
         this.accNumber = new BigInteger(accNumbers.toString());
     }
 
-    @Override                                     //издержки демонстрации возможностей, то же самое мы уже делали в классе Person
-    public void deposit(double money) {
-        this.balance += money;
-        System.out.println("Клиент " + this.ownerName + " внёс на счёт " + money);
+    @Override
+    public void withdraw(BigDecimal money) {
+        BigDecimal commission = this.getWithdrawCommission(money);
+        super.withdraw(money.add(commission));
+        System.out.println("Выдано денег: " + money + ". Комиссия за снятие " + commission);
     }
 
     @Override
-    public void withdraw(double money) {
-        super.withdraw(money +(money * COMMISSION));
-        System.out.println("Комиссия составила: " + money * COMMISSION);
+    public BigDecimal getWithdrawCommission(BigDecimal amount) {
+        BigDecimal result = amount.multiply(BigDecimal.valueOf(COMMISSION_PERCENT));
+        return result;
+    }
+
+    @Override
+    public BigDecimal getDepositCommission(BigDecimal amount) {
+        return BigDecimal.valueOf(0.0);
     }
 
     @Override
