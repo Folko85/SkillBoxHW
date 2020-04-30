@@ -12,13 +12,6 @@ public class BusinessPerson extends Person {    // сделаем индивид
     }
 
     @Override
-    public void deposit(BigDecimal money) {
-        BigDecimal commission = this.getDepositCommission(money);  // вычисляем комиссию в зависимости от вносимой суммы
-        super.deposit(money.subtract(commission));  // добавляем на баланс вносимую сумму за вычетом комисии
-        System.out.println("Комиссия составила " + commission);
-    }
-
-    @Override
     public BigDecimal getDepositCommission(BigDecimal amount) {
         BigDecimal commission;
         if (amount.compareTo(BigDecimal.valueOf(1000)) < 0) {

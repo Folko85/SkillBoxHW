@@ -14,14 +14,16 @@ abstract class AbstractClient {     // мы не создаём абстракт
     }
 
     public void deposit(BigDecimal money) {
-        this.balance = this.balance.add(money);
-        System.out.println("Клиент " + this.ownerName + " внёс на счёт " + money);
+        BigDecimal commission = this.getDepositCommission(money);            // при внесении комиссия вычитается из вносимых денег
+        this.balance = this.balance.add(money.subtract(commission));
+        System.out.println("Клиент " + this.ownerName + " внёс на счёт " + money.subtract(commission) + ". Комиссия составила " + commission);
     }
 
     public void withdraw(BigDecimal money) {
-        if (this.balance.compareTo(money) >= 0 ) {
-            this.balance = this.balance.subtract(money);
-            System.out.println("Клиент " + this.ownerName + " успешно снял со счёта сумму " + money);
+        BigDecimal commission = this.getWithdrawCommission(money);          //при снятии комиссия вычитается из остатка на счёте
+        if (this.balance.compareTo(money.add(commission)) >= 0 ) {
+            this.balance = this.balance.subtract(money.add(commission));
+            System.out.println("Клиент " + this.ownerName + " успешно снял со счёта сумму " + money + ". Комиссия составила " + commission);
         } else {
             System.out.println("На счёте недостаточно денег");
         }

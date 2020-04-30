@@ -21,16 +21,8 @@ public class Company extends AbstractClient {
     }
 
     @Override
-    public void withdraw(BigDecimal money) {
-        BigDecimal commission = this.getWithdrawCommission(money);
-        super.withdraw(money.add(commission));
-        System.out.println("Выдано денег: " + money + ". Комиссия за снятие " + commission);
-    }
-
-    @Override
     public BigDecimal getWithdrawCommission(BigDecimal amount) {
-        BigDecimal result = amount.multiply(BigDecimal.valueOf(COMMISSION_PERCENT));
-        return result;
+        return amount.multiply(BigDecimal.valueOf(COMMISSION_PERCENT)); //среда считает, что переменная здесь будет избыточной
     }
 
     @Override
