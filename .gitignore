@@ -26,3 +26,4 @@ out/
 .idea/
 *.iml
 
+/06_InheritanceAndPolymorphism/CompanyAndEmployees/target/
