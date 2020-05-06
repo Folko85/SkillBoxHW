@@ -46,9 +46,4 @@ public class Manager implements Employee {
     public String toString() {
         return "Менеджер " + this.name + " - " + this.getMonthSalary().setScale(2, RoundingMode.HALF_DOWN);
     }
-
-    @Override
-    public int compareTo(Employee employee) {
-        return this.getMonthSalary().compareTo(employee.getMonthSalary());
-    }
 }
