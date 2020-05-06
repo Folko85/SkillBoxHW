@@ -9,14 +9,13 @@ import java.util.List;
 
 public class Company {
 
-    private ArrayList<Employee> allSlavesOfCompany;    // все сотрудники компании будут находиться в общем списке с символичным названием
+    private ArrayList<Employee> allSlavesOfCompany = new ArrayList<>();    // все сотрудники компании будут находиться в общем списке с символичным названием
     private String companyTitle;                       // у любой компании есть название
     private String creator;                           // каждая компания кому-то принадлежит
 
     public Company(String companyTitle, String companyCreator) {
         this.companyTitle = companyTitle;
         this.creator = companyCreator;
-        this.allSlavesOfCompany = new ArrayList<>();
     }
 
     public void hair(Employee slave) {
@@ -25,11 +24,11 @@ public class Company {
             ((TopManager) slave).setOwnCompany(this);
         }
         slave.setSalary();   // только после этого назначается зарплата
-        if (slave instanceof Manager) // если сотрудник менеджер, то пересчитываем зарплату топ-менеджеров, так как изменится доход компании
+        if (slave instanceof Manager) // если сотрудник менеджер, то пересчитываем бонус топ-менеджеров, так как изменится доход компании
         {
             for (Employee employee : allSlavesOfCompany) {
                 if (employee instanceof TopManager)
-                    employee.setSalary();
+                    ((TopManager) employee).recalculationBonus(this.getIncome()); // передаём в метод пересчёта бонуса текущий доход.
             }
         }
     }
@@ -41,8 +40,7 @@ public class Company {
     }
 
     public void fair(Employee slave) {
-        if (allSlavesOfCompany.contains(slave)) {
-            allSlavesOfCompany.remove(slave);  // удаляем сотрудника из общего списка
+        if (allSlavesOfCompany.remove(slave)) {   // вот это удивило, но проверил документацию  - метод действительно может возвращать boolean
             slave.setZeroSalary();             // обнуляем его зарплату
         } else {
             System.out.println("Такой сотрудник здесь не работает");
@@ -51,7 +49,7 @@ public class Company {
         {
             for (Employee employee : allSlavesOfCompany) {
                 if (employee instanceof TopManager)
-                    employee.setSalary();
+                    ((TopManager) employee).recalculationBonus(this.getIncome());  // передаём в метод пересчёта бонуса текущий доход.
             }
         }
     }
@@ -67,11 +65,7 @@ public class Company {
     }
 
     public boolean getSuccessStatus() {              // отдельный метод, чтобы сильно не загромождать код. Используется для проверки бонуса топ-менеджерам
-        if (this.getIncome().compareTo(BigDecimal.valueOf(10000000.0)) >= 0) { // но можно использовать и иначе.
-            return true;
-        } else {
-            return false;
-        }
+        return this.getIncome().compareTo(BigDecimal.valueOf(10000000.0)) >= 0;
     }
 
     public String getCompanyTitle() {
@@ -87,30 +81,12 @@ public class Company {
     }
 
     public List<Employee> getTopSalaryStaff(int count) {
-        Collections.sort(allSlavesOfCompany, new Comparator<Employee>() {
-            @Override
-            public int compare(Employee employee, Employee secondEmployee) {
-                return employee.getMonthSalary().compareTo(secondEmployee.getMonthSalary());//// отсортировали по возрастанию доходов
-            }
-        });
-        List<Employee> result = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            result.add(allSlavesOfCompany.get(allSlavesOfCompany.size() - i - 1)); // и взяли count последних из списка
-        }
-        return result;
+        Collections.sort(allSlavesOfCompany, Collections.<Employee>reverseOrder()); // сортируем по убыванию
+        return allSlavesOfCompany.subList(0, count);
     }
 
-    public List<Employee> getLowestSalaryStaff(int count) {               // то же самое, только взяли 10 первых из списка
-        Collections.sort(allSlavesOfCompany, new Comparator<Employee>() {
-            @Override
-            public int compare(Employee employee, Employee secondEmployee) {
-                return employee.getMonthSalary().compareTo(secondEmployee.getMonthSalary());
-            }
-        });
-        ArrayList<Employee> result = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            result.add(allSlavesOfCompany.get(i));
-        }
-        return result;
+    public List<Employee> getLowestSalaryStaff(int count) {
+        Collections.sort(allSlavesOfCompany);                              // по возрастанию метод коллекции сортируются по дефолту
+        return allSlavesOfCompany.subList(0, count);
     }
 }
