@@ -11,9 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
         ArrayList<Employee> staff = loadStaffFromFile();    // зарплату сделаем по убыванию
-        Collections.sort(staff, ((Comparator<Employee>) (o1, o2) -> o1.getSalary().compareTo(o2.getSalary())).reversed()
-                .thenComparing((o1, o2) -> o1.getName().compareTo(o2.getName())));
- // Idea предлагает очень сильно сократить этот код, но тогда он станет очень уж непонятным. Такую структуру запомнить и преобразовать легче
+        Collections.sort(staff, Comparator.comparingInt(Employee::getSalary).reversed().thenComparing(Employee::getName));
         for (Employee employee : staff) {
             System.out.println(employee);
         }
