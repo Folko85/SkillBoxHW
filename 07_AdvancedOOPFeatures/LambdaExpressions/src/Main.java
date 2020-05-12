@@ -1,6 +1,7 @@
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.*;
 
 public class Main {
@@ -12,9 +13,15 @@ public class Main {
     public static void main(String[] args) {
         ArrayList<Employee> staff = loadStaffFromFile();    // зарплату сделаем по убыванию
         Collections.sort(staff, Comparator.comparingInt(Employee::getSalary).reversed().thenComparing(Employee::getName));
-        for (Employee employee : staff) {
-            System.out.println(employee);
-        }
+        //  for (Employee employee : staff) {
+        //      System.out.println(employee);
+        //  }
+
+        int workStartYear = 2017;   // вынесем нужный год в переменную
+        staff.stream()                                     //вот такое вот длинное преобразование дат
+                .filter(employee -> employee.getWorkStart().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear() == workStartYear) // фильтруем по году
+                .max(Comparator.comparing(Employee::getSalary))   // определяем максимум
+                .ifPresent(employee -> System.out.println("Максимальная зарплата сотрудника: " + employee.getSalary())); // если существует - выводим
     }
 
     private static ArrayList<Employee> loadStaffFromFile() {
