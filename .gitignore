@@ -27,3 +27,4 @@
 out/
 .idea/
 *.iml
+/07_AdvancedOOPFeatures/Airport/target/

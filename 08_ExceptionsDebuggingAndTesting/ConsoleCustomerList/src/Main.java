@@ -19,7 +19,19 @@ public class Main
             String command = scanner.nextLine();
             String[] tokens = command.split("\\s+", 2);
             if(tokens[0].equals("add")) {
-                executor.addCustomer(tokens[1]);
+                try {
+                    executor.addCustomer(tokens[1]);
+                } catch (IllegalFormatException e) {
+                    e.printStackTrace();
+                } catch (IllegalNameException e) {
+                    e.printStackTrace();
+                } catch (IllegalPhoneException e) {
+                    e.printStackTrace();
+                } catch (IllegalEmailException e) {
+                    e.printStackTrace();
+                } catch (Exception e) {        // на случай непредусмотренных исключений
+                    e.printStackTrace();
+                }
             }
             else if(tokens[0].equals("list")) {
                 executor.listCustomers();
