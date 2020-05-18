@@ -21,15 +21,9 @@ public class Main
             if(tokens[0].equals("add")) {
                 try {
                     executor.addCustomer(tokens[1]);
-                } catch (IllegalFormatException e) {
+                } catch (IllegalEmailException e) {        // Тут теперь не выйдет сделать multi-catch, но смысл понятен.
                     e.printStackTrace();
-                } catch (IllegalNameException e) {
-                    e.printStackTrace();
-                } catch (IllegalPhoneException e) {
-                    e.printStackTrace();
-                } catch (IllegalEmailException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {        // на случай непредусмотренных исключений
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

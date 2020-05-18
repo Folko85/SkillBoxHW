@@ -1,4 +1,4 @@
-public class IllegalPhoneException extends Exception {
+public class IllegalPhoneException extends RuntimeException {
     public IllegalPhoneException() {
     }
 

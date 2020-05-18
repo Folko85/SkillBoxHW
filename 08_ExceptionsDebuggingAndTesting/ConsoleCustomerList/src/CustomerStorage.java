@@ -7,7 +7,7 @@ public class CustomerStorage {
         storage = new HashMap<>();
     }
 
-    public void addCustomer(String data) throws IllegalFormatException, IllegalNameException, IllegalPhoneException, IllegalEmailException { // здесь мы прокидываем все исключения, отлавливаем в мейне
+    public void addCustomer(String data) throws IllegalEmailException { // здесь мы прокидываем все исключения, отлавливаем в мейне
         String[] components = data.split("\\s+");
         if (components.length != 4) {
             throw new IllegalFormatException("Неверный формат команды.");
