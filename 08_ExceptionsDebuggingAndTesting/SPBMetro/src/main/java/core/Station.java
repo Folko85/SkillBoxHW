@@ -7,8 +7,8 @@ public class Station implements Comparable<Station>
 
     public Station(String name, Line line)
     {
-        this.name = name;
-        this.line = line;
+        this.name = name;     // у каждой станции есть имя
+        this.line = line;      // и она относится к какой-то линии
     }
 
     public Line getLine()
@@ -22,13 +22,13 @@ public class Station implements Comparable<Station>
     }
 
     @Override
-    public int compareTo(Station station)
+    public int compareTo(Station station)         // сравнение станций идёт по линиям
     {
         int lineComparison = line.compareTo(station.getLine());
         if(lineComparison != 0) {
             return lineComparison;
         }
-        return name.compareToIgnoreCase(station.getName());
+        return name.compareToIgnoreCase(station.getName());   // если линия одна, то сравниваются имена
     }
 
     @Override

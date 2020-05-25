@@ -11,9 +11,9 @@ public class Line implements Comparable<Line>
 
     public Line(int number, String name)
     {
-        this.number = number;
-        this.name = name;
-        stations = new ArrayList<>();
+        this.number = number;         //у каждой линии есть номер
+        this.name = name;              // имя
+        stations = new ArrayList<>();       // и список станций
     }
 
     public int getNumber()
@@ -36,7 +36,7 @@ public class Line implements Comparable<Line>
         return stations;
     }
 
-    @Override
+    @Override                                                     // сравниваются они по номерам
     public int compareTo(Line line)
     {
         return Integer.compare(number, line.getNumber());

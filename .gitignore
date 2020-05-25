@@ -28,3 +28,5 @@ out/
 .idea/
 *.iml
 /07_AdvancedOOPFeatures/Airport/target/
+/08_ExceptionsDebuggingAndTesting/SPBMetro/target/
+/08_ExceptionsDebuggingAndTesting/SPBMetro/.idea/

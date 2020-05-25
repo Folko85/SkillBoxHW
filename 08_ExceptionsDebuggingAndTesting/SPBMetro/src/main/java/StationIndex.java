@@ -12,9 +12,9 @@ public class StationIndex
 
     public StationIndex()
     {
-        number2line = new HashMap<>();
-        stations = new TreeSet<>();
-        connections = new TreeMap<>();
+        number2line = new HashMap<>();  // у каждой карты станций есть карта соответствий номеров линиям
+        stations = new TreeSet<>();           // множество станций
+        connections = new TreeMap<>();       // и карта переходов между линиями
     }
 
     public void addStation(Station station)
@@ -27,16 +27,16 @@ public class StationIndex
         number2line.put(line.getNumber(), line);
     }
 
-    public void addConnection(List<Station> stations)
+    public void addConnection(List<Station> stations)   // порядок добавления перехода
     {
-        for(Station station : stations)
+        for(Station station : stations)          // для каждой станции
         {
-            if(!connections.containsKey(station)) {
-                connections.put(station, new TreeSet<>());
+            if(!connections.containsKey(station)) {         // создаём карту, где она является ключом
+                connections.put(station, new TreeSet<>());   // и ей соответствует пустое значение множества
             }
-            TreeSet<Station> connectedStations = connections.get(station);
-            connectedStations.addAll(stations.stream()
-                .filter(s -> !s.equals(station)).collect(Collectors.toList()));
+            TreeSet<Station> connectedStations = connections.get(station);// получаем это пустое множество из карты
+            connectedStations.addAll(stations.stream()                          // и добавляем туда все переданные значения
+                .filter(s -> !s.equals(station)).collect(Collectors.toList()));   // кроме ключа.
         }
     }
 

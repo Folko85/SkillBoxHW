@@ -12,14 +12,14 @@ import java.util.Scanner;
 
 public class Main
 {
-    private static String dataFile = "src/main/resources/map.json";
+    private static String dataFile = "src/main/resources/map.json";   //путь до файла со станциями
     private static Scanner scanner;
 
-    private static StationIndex stationIndex;
+    private static StationIndex stationIndex;        // карта станций
 
     public static void main(String[] args)
     {
-        RouteCalculator calculator = getRouteCalculator();
+        RouteCalculator calculator = getRouteCalculator();        // объект, рассчитывающий маршрут
 
         System.out.println("Программа расчёта маршрутов метрополитена Санкт-Петербурга\n");
         scanner = new Scanner(System.in);
@@ -28,38 +28,38 @@ public class Main
             Station from = takeStation("Введите станцию отправления:");
             Station to = takeStation("Введите станцию назначения:");
 
-            List<Station> route = calculator.getShortestRoute(from, to);
+            List<Station> route = calculator.getShortestRoute(from, to);         // записываем в список кратчайший маршрут
             System.out.println("Маршрут:");
             printRoute(route);
 
             System.out.println("Длительность: " +
-                RouteCalculator.calculateDuration(route) + " минут");
+                RouteCalculator.calculateDuration(route) + " минут");           // высчитываем его длительность
         }
     }
 
     private static RouteCalculator getRouteCalculator()
     {
-        createStationIndex();
+        createStationIndex();                             //рассчётчик маршрутов создаётся на основе карты маршрутов
         return new RouteCalculator(stationIndex);
     }
 
     private static void printRoute(List<Station> route)
     {
-        Station previousStation = null;
+        Station previousStation = null;                          //1. предыдущей станции нет
         for(Station station : route)
         {
             if(previousStation != null)
             {
                 Line prevLine = previousStation.getLine();
                 Line nextLine = station.getLine();
-                if(!prevLine.equals(nextLine))
+                if(!prevLine.equals(nextLine))                   //4.если линия предыдущей не совпадает с линией текущей
                 {
-                    System.out.println("\tПереход на станцию " +
+                    System.out.println("\tПереход на станцию " +            //5. то фиксируем переход на другую линию
                         station.getName() + " (" + nextLine.getName() + " линия)");
                 }
             }
-            System.out.println("\t" + station.getName());
-            previousStation = station;
+            System.out.println("\t" + station.getName());       //2. распечатываем текущую станцию
+            previousStation = station;                         //3. присваиваем ссылку на неё предыдущей.
         }
     }
 
@@ -67,7 +67,7 @@ public class Main
     {
         for(;;)
         {
-            System.out.println(message);
+            System.out.println(message);               // вводим станцию с клавиатуры и проверяем, есть ли на карте станций
             String line = scanner.nextLine().trim();
             Station station = stationIndex.getStation(line);
             if(station != null) {
@@ -79,7 +79,7 @@ public class Main
 
     private static void createStationIndex()
     {
-        stationIndex = new StationIndex();
+        stationIndex = new StationIndex();       // парсим файл и записываем станции в объект StationIndex
         try
         {
             JSONParser parser = new JSONParser();
@@ -99,7 +99,7 @@ public class Main
         }
     }
 
-    private static void parseConnections(JSONArray connectionsArray)
+    private static void parseConnections(JSONArray connectionsArray)       // парсим переходы
     {
         connectionsArray.forEach(connectionObject ->
         {
@@ -119,11 +119,11 @@ public class Main
                 }
                 connectionStations.add(station);
             });
-            stationIndex.addConnection(connectionStations);
+            stationIndex.addConnection(connectionStations); // 4. Добавляем переходы
         });
     }
 
-    private static void parseStations(JSONObject stationsObject)
+    private static void parseStations(JSONObject stationsObject)   // парсим станции
     {
         stationsObject.keySet().forEach(lineNumberObject ->
         {
@@ -133,13 +133,13 @@ public class Main
             stationsArray.forEach(stationObject ->
             {
                 Station station = new Station((String) stationObject, line);
-                stationIndex.addStation(station);
-                line.addStation(station);
+                stationIndex.addStation(station);         // 2.добавляем станции на карту
+                line.addStation(station);                // 3. добавлем  станции на линию
             });
         });
     }
 
-    private static void parseLines(JSONArray linesArray)
+    private static void parseLines(JSONArray linesArray)    //парсим линии
     {
         linesArray.forEach(lineObject -> {
             JSONObject lineJsonObject = (JSONObject) lineObject;
@@ -147,11 +147,11 @@ public class Main
                     ((Long) lineJsonObject.get("number")).intValue(),
                     (String) lineJsonObject.get("name")
             );
-            stationIndex.addLine(line);
+            stationIndex.addLine(line);              //1. Добавляем линии на карту
         });
     }
 
-    private static String getJsonFile()
+    private static String getJsonFile()     // читаем json и записываем его в список
     {
         StringBuilder builder = new StringBuilder();
         try {
