@@ -1,11 +1,15 @@
 import core.Line;
 import core.Station;
-import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class RouteCalculatorTest extends TestCase {
+import static junit.framework.TestCase.assertEquals;
+
+public class RouteCalculatorTest {
 
     /*          Следуя заветам чатика рисуем свою карту метро, которую и будем тестить, добавлять будем вручную.
      *                      ибо быстрее выйдет, чем переписывать из мейна весь парсинг.
@@ -26,8 +30,9 @@ public class RouteCalculatorTest extends TestCase {
      */
 
     StationIndex testStationIndex = new StationIndex();
+    RouteCalculator testCalculator;
 
-    @Override
+    @Before
     public void setUp() throws Exception {
         // создаём пустую карту
         testStationIndex.addLine(new Line(1, "Red"));   // добавляем туда вновь созданные линии
@@ -53,102 +58,90 @@ public class RouteCalculatorTest extends TestCase {
         testStationIndex.addConnection(connectionOne);      // добавляем переходы
         testStationIndex.addConnection(connectionTwo);
 
+        testCalculator = new RouteCalculator(testStationIndex);
+
     }  // получилось конечно длинновато, но можно было сделать и длиннее
 
-    //всего 7 методов в классе  RouteCalculator
-
-    //  public void testGetShortestRoute()               // этот метод последовательно вызывает три других метода,
-    //{                                                    // и больше ничего не делает, значит нечего и проверят
+    @Test
     public void testGetRouteOnTheLine() {
         Station from = testStationIndex.getStation("Square");  // проверим маршрут, который возвращает метод getShortestRoute
         Station to = testStationIndex.getStation("Banner");
-        List<Station> mustBe = new ArrayList<>();
-        mustBe.add(testStationIndex.getStation("Square"));
-        mustBe.add(testStationIndex.getStation("Alert"));
-        mustBe.add(testStationIndex.getStation("Banner"));
-        RouteCalculator testCalculator = new RouteCalculator(testStationIndex);
+        List<Station> mustBe = buildRoute("Square->Alert->Banner");
         List<Station> really = testCalculator.getShortestRoute(from, to);
         assertEquals(mustBe, really);       // метод прекрасно сравнивает даже списки объектов. Like))
     }
 
+    @Test
     public void testGetRouteWithOneConnection() {                  // сравниваем маршруты с одной пересадкой
         Station from = testStationIndex.getStation("Venus");  // проверим маршрут, который возвращает метод getShortestRoute
         Station to = testStationIndex.getStation("Banner");
-        List<Station> mustBe = new ArrayList<>();
-        mustBe.add(testStationIndex.getStation("Venus"));
-        mustBe.add(testStationIndex.getStation("Earth"));
-        mustBe.add(testStationIndex.getStation("Alert"));
-        mustBe.add(testStationIndex.getStation("Banner"));
-        RouteCalculator testCalculator = new RouteCalculator(testStationIndex);
+        List<Station> mustBe = buildRoute("Venus->Earth->Alert->Banner");
         List<Station> really = testCalculator.getShortestRoute(from, to);
         assertEquals(mustBe, really);       // метод прекрасно сравнивает даже списки объектов. Like))
     }
 
- //   public void testIsConnected() {  этот метод косвенно вызывается при проверке маршрута с одной пересадкой
-    //}
-
- //   public void testGetRouteViaConnectedLine() {  этот метод косвенно вызывается при проверке маршрута с двумя пересадками
-   // }
-
+    @Test
     public void testGetRouteWithTwoConnections() {                    // метод с двумя пересадками помогает нам выявить ошибку в коде
         Station from = testStationIndex.getStation("Square");  // а именно, в методе getRouteWithOneConnection
         Station to = testStationIndex.getStation("Wagon");
-        List<Station> mustBe = new ArrayList<>();
-        mustBe.add(testStationIndex.getStation("Square"));
-        mustBe.add(testStationIndex.getStation("Alert"));
-        mustBe.add(testStationIndex.getStation("Earth"));
-        mustBe.add(testStationIndex.getStation("Jupiter"));
-        mustBe.add(testStationIndex.getStation("Uranus"));
-        mustBe.add(testStationIndex.getStation("Neptune"));
-        mustBe.add(testStationIndex.getStation("Sea"));
-        mustBe.add(testStationIndex.getStation("Wagon"));
-        RouteCalculator testCalculator = new RouteCalculator(testStationIndex);
+        List<Station> mustBe = buildRoute("Square->Alert->Earth->Jupiter->Uranus->Neptune->Sea->Wagon");
         List<Station> really = testCalculator.getShortestRoute(from, to);
         assertEquals(mustBe, really);       // метод прекрасно сравнивает даже списки объектов. Like))
     }
 
+    @Test
     public void testCalculateDurationOnLine() { // будем вычислять длительность для трёх вариантов построения маршрута
         Station from = testStationIndex.getStation("Square");  // сперва маршрут на линии
         Station to = testStationIndex.getStation("Banner");
-        RouteCalculator testCalculator = new RouteCalculator(testStationIndex);
         List<Station> route = testCalculator.getShortestRoute(from, to);  // мы уже убедились, чтиог методы работают правильно, так что долой ручное заполнение
         double mustBe = 5.0;
         double really = RouteCalculator.calculateDuration(route);
         assertEquals(mustBe, really);
     }
 
+    @Test
     public void testCalculateDurationWithOneConnection() { // будем вычислять длительность для трёх вариантов построения маршрута
         Station from = testStationIndex.getStation("Venus");  // маршрут с пересадкой
         Station to = testStationIndex.getStation("Banner");
-        RouteCalculator testCalculator = new RouteCalculator(testStationIndex);
         List<Station> route = testCalculator.getShortestRoute(from, to);  // мы уже убедились, чтиог методы работают правильно, так что долой ручное заполнение
         double mustBe = 8.5;
         double really = RouteCalculator.calculateDuration(route);
         assertEquals(mustBe, really);
     }
 
+    @Test
     public void testCalculateDurationWithTwoConnection() { // будем вычислять длительность для трёх вариантов построения маршрута
         Station from = testStationIndex.getStation("Square");  // маршрут с двумя пересадками
         Station to = testStationIndex.getStation("Wagon");
-        RouteCalculator testCalculator = new RouteCalculator(testStationIndex);
         List<Station> route = testCalculator.getShortestRoute(from, to);  // мы уже убедились, чтиог методы работают правильно, так что долой ручное заполнение
         double mustBe = 19.5;
         double really = RouteCalculator.calculateDuration(route);
         assertEquals(mustBe, really);
     }
 
+    @Test
     public void testCalculateDurationWithoutStation() {            // ну и обязательно стоит проверить случай совпадения исходной и конечной станций
         Station from = testStationIndex.getStation("Tomato");
         Station to = testStationIndex.getStation("Tomato");
-        RouteCalculator testCalculator = new RouteCalculator(testStationIndex);
         List<Station> route = testCalculator.getShortestRoute(from, to);  // мы уже убедились, чтиог методы работают правильно, так что долой ручное заполнение
         double mustBe = 0.0;
         double really = RouteCalculator.calculateDuration(route);
         assertEquals(mustBe, really);
     }
 
-    @Override
-    protected void tearDown() throws Exception {
+    private List<Station> buildRoute(String route) {
+        String[] stations = route.split("->");
+        List<Station> routeStation = new ArrayList();
+        for (String station : stations) {
+            routeStation.add(testStationIndex.getStation(station));
+        }
+        return routeStation;
+    }
 
+    @After
+    public void tearDown() throws Exception {
+        testStationIndex = null;
+        testCalculator = null;
+        System.gc();               //хз, насколько это правильно и нужно, но не оставлять же метод пустым
     }
 }
