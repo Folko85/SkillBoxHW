@@ -1,5 +1,7 @@
 import core.Line;
 import core.Station;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -12,6 +14,7 @@ import java.util.Scanner;
 
 public class Main
 {
+    private static Logger logger;
     private static String dataFile = "src/main/resources/map.json";   //путь до файла со станциями
     private static Scanner scanner;
 
@@ -19,21 +22,28 @@ public class Main
 
     public static void main(String[] args)
     {
+        logger = LogManager.getRootLogger();
         RouteCalculator calculator = getRouteCalculator();        // объект, рассчитывающий маршрут
 
         System.out.println("Программа расчёта маршрутов метрополитена Санкт-Петербурга\n");
         scanner = new Scanner(System.in);
         for(;;)
         {
-            Station from = takeStation("Введите станцию отправления:");
-            Station to = takeStation("Введите станцию назначения:");
+            try {
+                Station from = takeStation("Введите станцию отправления:");
+                Station to = takeStation("Введите станцию назначения:");
+                logger.info("Искали маршрут от станции " + from + " до станции " + to);
+                List<Station> route = calculator.getShortestRoute(from, to);         // записываем в список кратчайший маршрут
+                System.out.println("Маршрут:");
+                printRoute(route);
 
-            List<Station> route = calculator.getShortestRoute(from, to);         // записываем в список кратчайший маршрут
-            System.out.println("Маршрут:");
-            printRoute(route);
-
-            System.out.println("Длительность: " +
-                RouteCalculator.calculateDuration(route) + " минут");           // высчитываем его длительность
+                System.out.println("Длительность: " +
+                        RouteCalculator.calculateDuration(route) + " минут");           // высчитываем его длительность
+            }
+            catch (Exception e)
+            {
+                logger.error("Возникла ошибка: " + e);
+            }
         }
     }
 
@@ -63,8 +73,7 @@ public class Main
         }
     }
 
-    private static Station takeStation(String message)
-    {
+    private static Station takeStation(String message) throws Exception {
         for(;;)
         {
             System.out.println(message);               // вводим станцию с клавиатуры и проверяем, есть ли на карте станций
@@ -73,7 +82,9 @@ public class Main
             if(station != null) {
                 return station;
             }
+            logger.warn("Станция не найдена: " + line);
             System.out.println("Станция не найдена :(");
+            throw new Exception("Ошибка в методе: " + Thread.currentThread().getStackTrace()[1].getMethodName());
         }
     }
 
