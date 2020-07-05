@@ -38,12 +38,10 @@ public class Main {
     }
 
     private static void downloadImage(String urlStr, String inputPlace) {
-        try {
-            URL url = new URL(urlStr);
-            String fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1);  //это имя копируемого файла
-            String filePlace = inputPlace + fileName;  // а это полный адрес назначения
-            BufferedInputStream inputStream = new BufferedInputStream(url.openStream());
-            FileOutputStream outputStream = new FileOutputStream(filePlace);
+        String fileName = urlStr.substring(urlStr.lastIndexOf("/") + 1);  //это имя копируемого файла
+        String filePlace = inputPlace + fileName;   // а это полный адрес назначения
+        try (BufferedInputStream inputStream = new BufferedInputStream(new URL(urlStr).openStream());
+             FileOutputStream outputStream = new FileOutputStream(filePlace)) {
             byte[] buffer = new byte[1024];
             int count;
             while ((count = inputStream.read(buffer, 0, 1024)) != -1) { //читаем, пока не закончится входной поток

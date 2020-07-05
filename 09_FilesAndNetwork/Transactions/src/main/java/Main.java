@@ -53,7 +53,9 @@ public class Main {
                 BigDecimal incomeMoney = new BigDecimal(columnList.get(INCOMING_INDEX).replaceAll(",", ".").replaceAll("\"", ""));
                 BigDecimal outgoingMoney = new BigDecimal(columnList.get(OUTGOING_INDEX).replaceAll(",", ".").replaceAll("\"", ""));
                 Transaction transaction = new Transaction(date, description, incomeMoney, outgoingMoney);
-                logger.debug("Для теста нам хватит и одной строчки. " + transaction);
+                if (logger.isDebugEnabled()) {  // рекомендуется проверять при вызове toString или других методов перед записью строки
+                    logger.debug("Для теста нам хватит и одной строчки. " + transaction);
+                }
                 Configurator.setLevel(logger.getName(), Level.INFO);  // лог отключён, так как мы повысили уровень логирования. Ибо нефиг писать логи по 120 строчек
                 result.add(transaction);
             }
