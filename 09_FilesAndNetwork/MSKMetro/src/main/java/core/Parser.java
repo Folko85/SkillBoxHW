@@ -14,15 +14,13 @@ import org.w3c.css.sac.ErrorHandler;
 import org.w3c.css.sac.InputSource;
 import org.w3c.dom.css.CSSRuleList;
 import org.w3c.dom.css.CSSStyleSheet;
+import ru.folko85.tableofcolor.TableOfColor;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Parser {
@@ -92,6 +90,7 @@ public class Parser {
             CSSStyleSheet sheet = parser.parseStyleSheet(source, null, null);
             CSSRuleList rules = sheet.getCssRules();
             inputStream.close();
+            TableOfColor table = new TableOfColor(new Locale("ru"));
             for (int i = 0; i < rules.getLength(); i++) {
                 if (rules.item(i).getCssText().contains("t-icon-metroln.ln-" + line.getID() + "::before")) {
                     String rule = rules.item(i).getCssText();
@@ -99,7 +98,7 @@ public class Parser {
                     int end = rule.lastIndexOf(")");
                     String rgbCode = rule.substring(begin, end);
                     String hexCode = rgbToHex(rgbCode);   //большинство сайтов переводят из hex-формата в цвета
-                    result = hexToColor(hexCode);
+                    result = table.findNamedColorFromHex(hexCode);
                 }
             }
         } catch (Exception exception) {
@@ -120,20 +119,20 @@ public class Parser {
         return String.format("%02x%02x%02x", r, g, b);
     }
 
-    public static String hexToColor(String colorCode) {
-        String result;
-        try {
-            Document tableOfColor = Jsoup.connect(colorFindUrl + colorCode).maxBodySize(0).get();
-            Elements elements = tableOfColor.select("section[id = named]");
-            result = elements.stream().map(el -> el.select("a").first().text()).map(s -> {
-                int end = s.indexOf("#") - 1;
-                return s.substring(0, end);
-            }).findFirst().orElse("Не найден");
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
-        return result;
-    }
+//    public static String hexToColor(String colorCode) {
+//        String result;
+//        try {
+//            Document tableOfColor = Jsoup.connect(colorFindUrl + colorCode).maxBodySize(0).get();
+//            Elements elements = tableOfColor.select("section[id = named]");
+//            result = elements.stream().map(el -> el.select("a").first().text()).map(s -> {
+//                int end = s.indexOf("#") - 1;
+//                return s.substring(0, end);
+//            }).findFirst().orElse("Не найден");
+//        } catch (Exception ex) {
+//            throw new RuntimeException(ex);
+//        }
+//        return result;
+//    }
 
     public static class MyErrorHandler implements ErrorHandler {
         @Override

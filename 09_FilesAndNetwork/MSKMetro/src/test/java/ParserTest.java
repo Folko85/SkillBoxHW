@@ -44,13 +44,13 @@ public class ParserTest {
         assertEquals(mustBe, really);
     }
 
-    @Test
-      public void testCodeToColor(){
-          String code = "ABAB09";
-          String really = Parser.hexToColor(code);
-          String mustBe = "Латунный";
-          assertEquals(mustBe, really);
-      }
+//    @Test
+//      public void testCodeToColor(){
+//          String code = "ABAB09";
+//          String really = Parser.hexToColor(code);
+//          String mustBe = "Латунный";
+//          assertEquals(mustBe, really);
+//      }
 
     @After
     public void tearDown() {
