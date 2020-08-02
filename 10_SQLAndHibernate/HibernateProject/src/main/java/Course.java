@@ -6,30 +6,30 @@ public class Course {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     private String name;
 
-    private int duration;
+    private Integer duration;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "enum")
+    @Column(columnDefinition = "ENUM('DESIGN', 'PROGRAMMING', 'MARKETING', 'MANAGEMENT', 'BUSINESS')")
     private CourseType type;
 
     private String description;
 
     @Column(name = "teacher_id")
-    private int teacherId;
+    private Integer teacherId;
 
     @Column(name = "students_count")
     private Integer studentsCount;   // в таблице есть курсы с незаполненными полями, так что меняем на Integer
 
-    private int price;
+    private Integer price;
 
     @Column(name = "price_per_hour")
-    private float pricePerHour;
+    private Float pricePerHour;
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -37,7 +37,7 @@ public class Course {
         this.name = name;
     }
 
-    public void setDuration(int duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
@@ -49,19 +49,19 @@ public class Course {
         this.description = description;
     }
 
-    public void setTeacherId(int teacherId) {
+    public void setTeacherId(Integer teacherId) {
         this.teacherId = teacherId;
     }
 
-    public void setStudentsCount(int studentsCount) {
+    public void setStudentsCount(Integer studentsCount) {
         this.studentsCount = studentsCount;
     }
 
-    public void setPrice(int price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
-    public void setPricePerHour(float pricePerHour) {
+    public void setPricePerHour(Float pricePerHour) {
         this.pricePerHour = pricePerHour;
     }
 
@@ -69,7 +69,7 @@ public class Course {
         return name;
     }
 
-    public int getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
@@ -81,7 +81,7 @@ public class Course {
         return description;
     }
 
-    public int getTeacherId() {
+    public Integer getTeacherId() {
         return teacherId;
     }
 
@@ -89,15 +89,15 @@ public class Course {
         return studentsCount;
     }
 
-    public int getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public float getPricePerHour() {
+    public Float getPricePerHour() {
         return pricePerHour;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

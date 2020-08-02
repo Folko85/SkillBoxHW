@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 public class Parser {
     private final static String mapUrl = "https://www.moscowmap.ru";
-    private final static String colorFindUrl = "https://encycolorpedia.ru/";  //лучшее что нашёл в плане определения цветов
     private static final Logger logger = LogManager.getLogger(Parser.class);
     Document metropolitan;
     Elements objects;
@@ -118,21 +117,6 @@ public class Parser {
         int b = Integer.parseInt(rgb[2].trim());
         return String.format("%02x%02x%02x", r, g, b);
     }
-
-//    public static String hexToColor(String colorCode) {
-//        String result;
-//        try {
-//            Document tableOfColor = Jsoup.connect(colorFindUrl + colorCode).maxBodySize(0).get();
-//            Elements elements = tableOfColor.select("section[id = named]");
-//            result = elements.stream().map(el -> el.select("a").first().text()).map(s -> {
-//                int end = s.indexOf("#") - 1;
-//                return s.substring(0, end);
-//            }).findFirst().orElse("Не найден");
-//        } catch (Exception ex) {
-//            throw new RuntimeException(ex);
-//        }
-//        return result;
-//    }
 
     public static class MyErrorHandler implements ErrorHandler {
         @Override

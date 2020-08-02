@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
         Logger hibernateLogger = Logger.getLogger("org.hibernate");     // возможно, это неверное решение,
-        hibernateLogger.setLevel(Level.OFF);                           // но эти бесконечные сообщения просто мешают
+        hibernateLogger.setLevel(Level.WARNING);                           // но эти бесконечные сообщения просто мешают
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
         Metadata metadata = new MetadataSources(registry).getMetadataBuilder().build();
         SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
