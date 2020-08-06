@@ -19,19 +19,20 @@ public class Main {
         StandardServiceRegistry registry = new StandardServiceRegistryBuilder().configure("hibernate.cfg.xml").build();
         Metadata metadata = new MetadataSources(registry).getMetadataBuilder().build();
         SessionFactory sessionFactory = metadata.getSessionFactoryBuilder().build();
-        Session session = sessionFactory.openSession();
+        try (Session session = sessionFactory.openSession()) {
 
-        courses = session.createQuery("from Course").list();  //в принципе в этой строчке вся наша программа
-        int courseId = new Random().nextInt(courses.size());        // выведем случайный курс по id
-        System.out.println(getCourseInfo(courseId));
-
-        session.close();
-        sessionFactory.close();
-
+            courses = session.createQuery("from Course").list();  //в принципе в этой строчке вся наша программа
+            int courseId = new Random().nextInt(courses.size());        // выведем случайный курс по id
+            System.out.println(getCourseInfo(courseId));
+            session.close();
+            sessionFactory.close();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
     }
 
     public static String getCourseInfo(int id) {         // ТЗ предполагает выводить информацию не о каждом, а о любом курсе, так что влепим сюда этот метод
         if (id <= 0 || id > courses.size()) return "Курс не найден";
-        return courses.stream().filter(c -> c.getId() == id).findFirst().orElse(null).toString();
+        return courses.stream().filter(c -> c.getId() == id).findFirst().orElseThrow().toString();
     }
 }

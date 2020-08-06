@@ -1,4 +1,5 @@
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Courses")
@@ -18,8 +19,9 @@ public class Course {
 
     private String description;
 
-    @Column(name = "teacher_id")
-    private Integer teacherId;
+    @ManyToOne (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn (name = "teacher_id")
+    private Teacher teacher;
 
     @Column(name = "students_count")
     private Integer studentsCount;   // в таблице есть курсы с незаполненными полями, так что меняем на Integer
@@ -28,6 +30,23 @@ public class Course {
 
     @Column(name = "price_per_hour")
     private Float pricePerHour;
+
+    @ManyToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinTable(name = "Subscriptions",
+    joinColumns = {@JoinColumn (name = "course_id")},
+    inverseJoinColumns = {@JoinColumn (name = "student_id")})
+    private List<Student> students;
+
+    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "course", orphanRemoval = true)
+    private List<Subscription> subscriptions;
+
+    public void setStudents(List<Student> students) {
+        this.students = students;
+    }
+
+    public List<Student> getStudents() {
+        return students;
+    }
 
     public void setId(Integer id) {
         this.id = id;
@@ -49,8 +68,8 @@ public class Course {
         this.description = description;
     }
 
-    public void setTeacherId(Integer teacherId) {
-        this.teacherId = teacherId;
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
     }
 
     public void setStudentsCount(Integer studentsCount) {
@@ -81,8 +100,8 @@ public class Course {
         return description;
     }
 
-    public Integer getTeacherId() {
-        return teacherId;
+    public Teacher getTeacher() {
+        return teacher;
     }
 
     public Integer getStudentsCount() {
@@ -103,6 +122,6 @@ public class Course {
 
     @Override
     public String toString() {
-        return this.getName() + ". Количество студентов: " + this.getStudentsCount();
+        return this.getName() + ". Преподаватель: " + this.getTeacher().getName() + ". Студентов: " + this.getStudents().size();
     }
 }
