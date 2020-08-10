@@ -9,64 +9,63 @@ public class Subscription {
     @EmbeddedId
     private Key id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @MapsId("studentId")
-    private Student student;
-
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @MapsId("courseId")
-    private Course course;
-
     @Column(name = "subscription_date")
     private LocalDateTime subscriptionDate;
 
-
-    public void setStudent(Student student) {
-        this.student = student;
+    public void setId(Key id) {
+        this.id = id;
     }
 
-    public void setCourse(Course course) {
-        this.course = course;
+    public Subscription() {
+    }
+
+    public Subscription(Student student, Course course, LocalDateTime subscriptionDate) {
+        this.id = new Key(student, course);
+        this.subscriptionDate = subscriptionDate;
+    }
+
+    public Key getId() {
+        return id;
     }
 
     public void setSubscriptionDate(LocalDateTime subscriptionDate) {
         this.subscriptionDate = subscriptionDate;
     }
 
-    public Student getStudent() {
-        return student;
-    }
-
-    public Course getCourse() {
-        return course;
-    }
-
     public LocalDateTime getSubscriptionDate() {
         return subscriptionDate;
     }
 
+    @Embeddable
     public static class Key implements Serializable {
 
-        @Column(name = "student_id")
-        private Integer studentId;
+        @ManyToOne
+        @JoinColumn(name = "student_id")
+        private Student student;
 
-        @Column(name = "course_id")
-        private Integer courseId;
+        @ManyToOne
+        @JoinColumn(name = "course_id")
+        private Course course;
 
-        public void setStudentId(Integer studentId) {
-            this.studentId = studentId;
+        public Key(Student student, Course course) {
+            this.student = student;
+            this.course = course;
         }
 
-        public void setCourseId(Integer courseId) {
-            this.courseId = courseId;
+        public void setStudent(Student student) {
+            this.student = student;
         }
 
-        public Integer getStudentId() {
-            return studentId;
+        public void setCourse(Course course) {
+            this.course = course;
         }
 
-        public Integer getCourseId() {
-            return courseId;
+        public Student getStudent() {
+            return student;
+        }
+
+        public Course getCourse() {
+            return course;
         }
 
         @Override
@@ -76,14 +75,14 @@ public class Subscription {
 
             Key key = (Key) o;
 
-            if (!studentId.equals(key.studentId)) return false;
-            return courseId.equals(key.courseId);
+            if (!student.equals(key.student)) return false;
+            return course.equals(key.course);
         }
 
         @Override
         public int hashCode() {
-            int result = studentId.hashCode();
-            result = 31 * result + courseId.hashCode();
+            int result = student.hashCode();
+            result = 31 * result + course.hashCode();
             return result;
         }
 

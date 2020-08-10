@@ -3,7 +3,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table (name = "Students")
+@Table(name = "Students")
 public class Student {
 
     @Id
@@ -14,14 +14,30 @@ public class Student {
 
     private Integer age;
 
-    @Column (name = "registration_date")
+    @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-    @OneToMany (cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "student", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.student", orphanRemoval = true)
     private List<Subscription> subscriptions;
 
-    @ManyToMany (mappedBy = "students", fetch = FetchType.LAZY)
+    @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
     private List<Course> courses;
+
+    public Student() {
+    }
+
+    public Student(String name, Integer age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public List<Course> getCourses() {
+        return courses;
+    }
 
     public void setId(Integer id) {
         this.id = id;
