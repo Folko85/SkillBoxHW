@@ -1,3 +1,5 @@
+package entities;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -24,7 +26,7 @@ public class Course {
     private Teacher teacher;
 
     @Column(name = "students_count")
-    private Integer studentsCount;   // в таблице есть курсы с незаполненными полями, так что меняем на Integer
+    private Integer studentsCount;
 
     private Integer price;
 
@@ -37,8 +39,11 @@ public class Course {
             inverseJoinColumns = {@JoinColumn(name = "student_id")})
     private List<Student> students;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.course", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.course")
     private List<Subscription> subscriptions;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.course", targetEntity = Purchase.class)
+    private List<Purchase> purchases;
 
     public List<Student> getStudents() {
         return students;
@@ -130,4 +135,13 @@ public class Course {
     public String toString() {
         return this.getName() + ". Преподаватель: " + this.getTeacher().getName() + ". Студентов: " + this.getStudents().size();
     }
+}
+
+enum CourseType {
+
+    DESIGN,
+    PROGRAMMING,
+    MARKETING,
+    MANAGEMENT,
+    BUSINESS
 }

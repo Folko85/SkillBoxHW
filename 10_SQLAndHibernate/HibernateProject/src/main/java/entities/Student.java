@@ -1,3 +1,5 @@
+package entities;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,8 +19,11 @@ public class Student {
     @Column(name = "registration_date")
     private LocalDateTime registrationDate;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.student", orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.student")
     private List<Subscription> subscriptions;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.student", targetEntity = Purchase.class)
+    private List<Purchase> purchases;
 
     @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
     private List<Course> courses;
