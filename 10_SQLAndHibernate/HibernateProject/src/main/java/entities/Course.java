@@ -1,6 +1,7 @@
 package entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -21,9 +22,11 @@ public class Course {
 
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
-    private Teacher teacher;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "Contracts",
+            joinColumns = {@JoinColumn(name = "course_id", columnDefinition = "INT(11) UNSIGNED")},
+            inverseJoinColumns = {@JoinColumn(name = "teacher_id", columnDefinition = "INT(11) UNSIGNED")})
+    private List<Teacher> teachers;
 
     @Column(name = "students_count")
     private Integer studentsCount;
@@ -33,7 +36,7 @@ public class Course {
     @Column(name = "price_per_hour")
     private Float pricePerHour;
 
-    @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "Subscriptions",
             joinColumns = {@JoinColumn(name = "course_id")},
             inverseJoinColumns = {@JoinColumn(name = "student_id")})
@@ -42,8 +45,8 @@ public class Course {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.course")
     private List<Subscription> subscriptions;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.course", targetEntity = Purchase.class)
-    private List<Purchase> purchases;
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.course", targetEntity = Purchase.class)
+//    private List<Purchase> purchases;
 
     public List<Student> getStudents() {
         return students;
@@ -83,8 +86,23 @@ public class Course {
         this.description = description;
     }
 
-    public void setTeacher(Teacher teacher) {
-        this.teacher = teacher;
+    public void hairTeacher(Teacher teacher) {
+        if (teachers == null) {
+            teachers = new ArrayList<>();
+        }
+        teachers.add(teacher);
+        if (!teacher.getCourses().contains(this)) { // во избежание лишней рекурсии.
+            teacher.addCourse(this);
+        }
+    }
+
+    public void fairTeacher(Teacher teacher) {
+        if (teachers.contains(teacher)) {
+            teachers.remove(teacher);
+            if (teacher.getCourses().contains(this)) {
+                teacher.removeCourse(this);
+            }
+        }
     }
 
     public void setPrice(Integer price) {
@@ -111,8 +129,8 @@ public class Course {
         return description;
     }
 
-    public Teacher getTeacher() {
-        return teacher;
+    public List<Teacher> getTeachers() {
+        return teachers;
     }
 
     public Integer getStudentsCount() {
@@ -133,7 +151,7 @@ public class Course {
 
     @Override
     public String toString() {
-        return this.getName() + ". Преподаватель: " + this.getTeacher().getName() + ". Студентов: " + this.getStudents().size();
+        return this.getName() + ". Студентов: " + this.getStudents().size();
     }
 }
 

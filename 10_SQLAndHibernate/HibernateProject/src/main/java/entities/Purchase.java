@@ -16,7 +16,7 @@ public class Purchase {
     private PurchaseKey key;
 
     @Column(name = "subscription_date")
-    LocalDateTime subscriptionDate;
+    private LocalDateTime subscriptionDate;  // точно, private
 
     public Purchase() {
     }
@@ -64,11 +64,11 @@ public class Purchase {
     private static class PurchaseKey implements Serializable {
 
         @ManyToOne
-        @JoinColumn(name = "course_id", nullable = false)
-        private Course course;
+        @JoinColumn(name = "course_id", nullable = false, columnDefinition = "INT(11) UNSIGNED")  //работает только при создании,
+        private Course course;                                                           // так что пришлось пересоздавать таблицу
 
         @ManyToOne
-        @JoinColumn(name = "student_id", nullable = false)
+        @JoinColumn(name = "student_id", nullable = false, columnDefinition = "INT(11) UNSIGNED")
         private Student student;
 
         public PurchaseKey() {

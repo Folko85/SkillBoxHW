@@ -1,4 +1,5 @@
 package entities;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Teacher {
 
     private Integer age;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "teacher", orphanRemoval = true)
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "teachers")
     private List<Course> courses;
 
     public Teacher() {
@@ -34,14 +35,23 @@ public class Teacher {
             courses = new ArrayList<>();
         }
         courses.add(course);
-        course.setTeacher(this);
+        if (!course.getTeachers().contains(this)) {
+            course.hairTeacher(this);
+        }
     }
 
     public void removeCourse(Course course) {
         if (courses.contains(course)) {
             courses.remove(course);
-            course.setTeacher(null);
+            if (course.getTeachers().contains(this)) {
+                course.fairTeacher(this);
+            }
         }
+    }
+
+
+    public List<Course> getCourses() {
+        return courses;
     }
 
     public void setId(Integer id) {
@@ -74,5 +84,10 @@ public class Teacher {
 
     public Integer getAge() {
         return age;
+    }
+
+    @Override
+    public String toString() {
+        return this.getName();
     }
 }

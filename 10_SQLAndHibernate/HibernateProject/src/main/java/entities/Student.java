@@ -22,8 +22,8 @@ public class Student {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.student")
     private List<Subscription> subscriptions;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.student", targetEntity = Purchase.class)
-    private List<Purchase> purchases;
+//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.student", targetEntity = Purchase.class)
+//    private List<Purchase> purchases;
 
     @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
     private List<Course> courses;
