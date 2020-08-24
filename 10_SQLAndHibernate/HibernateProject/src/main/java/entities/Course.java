@@ -1,5 +1,8 @@
 package entities;
 
+import entities.notifications.AddCourse;
+import entities.notifications.Notification;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +48,6 @@ public class Course {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.course")
     private List<Subscription> subscriptions;
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.course", targetEntity = Purchase.class)
-//    private List<Purchase> purchases;
-
     public List<Student> getStudents() {
         return students;
     }
@@ -91,6 +91,8 @@ public class Course {
             teachers = new ArrayList<>();
         }
         teachers.add(teacher);
+        AddCourse addCourse = new AddCourse(teacher, "Вам добавлен курс" + this.getName(), "Уведомление о новом курсе", this);
+        teacher.getNotifications().add(addCourse);
         if (!teacher.getCourses().contains(this)) { // во избежание лишней рекурсии.
             teacher.addCourse(this);
         }

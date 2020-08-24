@@ -17,12 +17,16 @@
         <!-- Set the current session context -->
         <property name="current_session_context_class">thread</property>
         <!-- Validate the database schema on startup -->
-        <property name="hbm2ddl.auto">validate</property>
+        <property name="hbm2ddl.auto">update</property>
 
         <mapping class="entities.Course"></mapping>
         <mapping class="entities.Teacher"></mapping>
         <mapping class="entities.Student"></mapping>
         <mapping class="entities.Subscription"></mapping>
-<!--        <mapping class="entities.Purchase"></mapping> Поскольку накатываем базу заново, этй таблицы нет))-->
+        <mapping class="entities.notifications.Notification"></mapping>
+        <mapping class="entities.notifications.WriteComment"></mapping>
+        <mapping class="entities.notifications.SendWork"></mapping>
+        <mapping class="entities.notifications.AddCourse"></mapping>
+        <!--        <mapping class="entities.Purchase"></mapping> Поскольку накатываем базу заново, этй таблицы нет))-->
     </session-factory>
 </hibernate-configuration>

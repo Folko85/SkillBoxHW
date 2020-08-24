@@ -1,8 +1,11 @@
 package entities;
 
+import entities.notifications.Notification;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "Teachers")
@@ -18,11 +21,16 @@ public class Teacher {
 
     private Integer age;
 
-    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "teachers")
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "teachers")
     private List<Course> courses;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "teacher")
+    private List <Notification> notifications;
 
     public Teacher() {
     }
+
+
 
     public Teacher(String name, Integer salary, Integer age) {
         this.name = name;
@@ -49,6 +57,9 @@ public class Teacher {
         }
     }
 
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
 
     public List<Course> getCourses() {
         return courses;

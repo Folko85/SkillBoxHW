@@ -1,7 +1,12 @@
 package entities;
 
+import entities.notifications.Notification;
+import entities.notifications.SendWork;
+import entities.notifications.WriteComment;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,9 +27,6 @@ public class Student {
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "id.student")
     private List<Subscription> subscriptions;
 
-//    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "key.student", targetEntity = Purchase.class)
-//    private List<Purchase> purchases;
-
     @ManyToMany(mappedBy = "students", fetch = FetchType.LAZY)
     private List<Course> courses;
 
@@ -34,6 +36,17 @@ public class Student {
     public Student(String name, Integer age) {
         this.name = name;
         this.age = age;
+    }
+
+    public void sendWork(String theme, Teacher teacher) { // чтоб не усложнять схему предположим, что работа адресована
+        // конкретному учителю. Проверять, его ли это учитель не будем
+        SendWork notification = new SendWork(teacher, theme, "Уведомление о присланной работе", this);
+        teacher.getNotifications().add(notification);
+    }
+
+    public void writeComment(String text, Teacher teacher) {
+        WriteComment notification = new WriteComment(teacher, text, "Уведомление о комментарии", this);
+        teacher.getNotifications().add(notification);
     }
 
     public List<Subscription> getSubscriptions() {
