@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -48,8 +49,8 @@ public class Main {
         try {
 
             int processorsCount = Runtime.getRuntime().availableProcessors();
-            List<File> files = Files.walk(Paths.get(srcFolder)).map(Path::toFile)
-                    .filter(file -> !file.isDirectory()).filter(f -> getFileExtension(f).equals("jpg") || getFileExtension(f).equals("png"))
+            List<File> files = Files.walk(Paths.get(srcFolder)).map(Path::toFile).filter(file -> !file.isDirectory())
+                    .filter(f -> ImageResizer.getFileExtension(f).equals("jpg") || ImageResizer.getFileExtension(f).equals("png"))
                     .sorted(Comparator.comparing(File::length)).collect(Collectors.toList());
             // сортировка сильно замедляет процесс, но без неё как-то ненаглядно выходит. Пусть в потоках с чуть
             // большим количеством файлов, исходные файлы будут меньше
@@ -59,29 +60,25 @@ public class Main {
             int bound = oneMoreSizeCount * (filesPerThread + 1);
             List<File> subListOneMore = files.subList(0, bound); // здесь все файлы для увеличенных потоков
             List<File> subListStandard = files.subList(bound, files.size());
+            List<Thread> threads = new ArrayList<>();
             for (int i = 0; i < processorsCount; i++) {  // не люблю такие формулы, но не городить же лишние сущности ради одного цикла
                 int lowBound = (i < oneMoreSizeCount) ? i * (filesPerThread + 1) : (i - oneMoreSizeCount) * filesPerThread;
                 int upBound = (i < oneMoreSizeCount) ? lowBound + filesPerThread + 1 : lowBound + filesPerThread;
                 List<File> perThread = (i < oneMoreSizeCount) ? subListOneMore.subList(lowBound, upBound) : subListStandard.subList(lowBound, upBound);
                 ImageResizer ir = new ImageResizer(perThread, dstFolder, size);  // вот и нашлось место для тернарных операторов
-                new Thread(ir).start();
+                Thread thread = new Thread(ir);
+                thread.start();
+                threads.add(thread);  // ничего лучше придумать не удалось. Складываем все потоки в список и потом оттуда ждём их
             }
+            for (int i = 0; i < threads.size(); i++) {
+                threads.get(i).join();
+            }
+
         } catch (Exception e) {
             logger.error("Произошла ошибка " + e);
             System.out.println("Проверьте корректность введённых данных");
             System.exit(-1);
         }
-    }
-
-    //метод определения расширения файла
-    private static String getFileExtension(File file) {
-        String fileName = file.getName();
-        // если в имени файла есть точка и она не является первым символом в названии файла
-        if (fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
-            // то вырезаем все знаки после последней точки в названии файла, то есть ХХХХХ.txt -> txt
-            return fileName.substring(fileName.lastIndexOf(".") + 1);
-            // в противном случае возвращаем заглушку, то есть расширение не найдено
-        else return "";
     }
 
     private static void badArgsExit() { // выход из приложения с сообщением об ошибке
