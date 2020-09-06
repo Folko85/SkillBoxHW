@@ -2,19 +2,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Bank {
-    private volatile HashMap<String, Account> accounts = new HashMap<>();
+    private ConcurrentHashMap<String, Account> accounts = new ConcurrentHashMap<>();
     private final Random random = new Random();
     Logger logger = LogManager.getLogger(Bank.class);
 
     public Bank() {  // при создании банка в целях удобства сразу создадим ему несколько сотен аккаунтов
-
-        for (int i = 0; i < 500; i++) {
+        double startLimit = 300_000.0;
+        int accountCount = 1000;
+        for (int i = 0; i < accountCount; i++) {
             String name = String.format("%06d", i);
-            this.accounts.put(name, new Account(name, BigDecimal.valueOf(200_000.0)));
+            this.accounts.put(name, new Account(name, BigDecimal.valueOf(startLimit)));
         }
     }
 
@@ -25,14 +26,17 @@ public class Bank {
     }
 
     public void transfer(String fromAccountNum, String toAccountNum, BigDecimal amount) throws InterruptedException {
-        if (checkAbility(fromAccountNum, toAccountNum, amount)) {     // проверяем корректность перевода
-            if (amount.compareTo(BigDecimal.valueOf(50000)) < 0 || !checkFraud(fromAccountNum, toAccountNum, amount)) {
-                accounts.get(fromAccountNum).withdraw(amount);  // если не мошенничество - переводим
-                accounts.get(toAccountNum).deposit(amount);
-            } else {
-                accounts.get(fromAccountNum).block();  // если мошенничество - блокируем
-                accounts.get(toAccountNum).block();
-            }
+                if (checkAbility(fromAccountNum, toAccountNum, amount)) {     // проверяем корректность перевода
+                    if (amount.compareTo(BigDecimal.valueOf(50000)) <= 0) {
+                        accounts.get(fromAccountNum).withdraw(amount);  // если сумма мелкая - переводим
+                        accounts.get(toAccountNum).deposit(amount);
+                    } else if (checkFraud(fromAccountNum, toAccountNum, amount)) {
+                        accounts.get(fromAccountNum).withdraw(amount);  // если не мошенничество - тож переводим
+                        accounts.get(toAccountNum).deposit(amount);
+                    } else {
+                        accounts.get(fromAccountNum).block();  // если мошенничество - блокируем
+                        accounts.get(toAccountNum).block();
+                    }
         }
     }
 
@@ -46,38 +50,32 @@ public class Bank {
         }  // проверяем существование аккаунтов
         else // проверяем, не заблокированы ли уже аккаунты
             if (!checkMoney(fromAccountNum, amount)) {    // проверяем наличие денег
-            logger.warn(fromAccountNum + ": нет денег Баланс:" + accounts.get(fromAccountNum).getMoney());
-            return false;
-        } else return checkNotBlocked(fromAccountNum, toAccountNum);
+                logger.warn(fromAccountNum + ": нет денег Баланс:" + accounts.get(fromAccountNum).getMoney());
+                return false;
+            } else return checkNotBlocked(fromAccountNum, toAccountNum);
     }
 
     public boolean checkExist(String... accNumber) {  // просто опробовать varargs
-        synchronized (accounts) {            //здесь достаточно синхронизации по списку аккаунтов
-            for (String s : accNumber) {
-                if (!accounts.containsKey(s)) {
-                    logger.warn(s + ": некорректный номер");
-                    return false;
-                }     // если хотя бы один из аккаунтов не существует
-            }
-            return true;
+        for (String s : accNumber) {
+            if (!accounts.containsKey(s)) {
+                logger.warn(s + ": некорректный номер");
+                return false;
+            }     // если хотя бы один из аккаунтов не существует
         }
+        return true;
     }
 
     public boolean checkMoney(String accNumber, BigDecimal amount) {
-        synchronized (accounts) {
-            return accounts.get(accNumber).getMoney().compareTo(amount) >= 0;
-        }
+        return (accounts.get(accNumber).getMoney().compareTo(amount) >= 0);
     }
 
     public boolean checkNotBlocked(String... accNumber) {  // просто опробовать varargs
-        synchronized (accounts) {
-            for (String s : accNumber) {
-                if (accounts.get(s).isBlocked()) {
-                    logger.warn(s + ": заблокирован ранее");
-                    return false;
-                }     // если хотя бы один из аккаунтов заблокирован
-            }
-            return true;
+        for (String s : accNumber) {
+            if (accounts.get(s).isBlocked()) {
+                logger.warn(s + ": заблокирован ранее");
+                return false;
+            }     // если хотя бы один из аккаунтов заблокирован
         }
+        return true;
     }
 }

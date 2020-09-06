@@ -5,9 +5,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+import java.util.concurrent.*;
 
 import static junit.framework.TestCase.assertEquals;
 
@@ -15,7 +14,8 @@ public class BankTest {
 
     private Bank testBank;
     private Random testRandom;
-    private final int threadCount = 10;
+    private final int threadCount = 5;
+    private final int transactions = 100_000;
     private Logger logger = LogManager.getLogger(BankTest.class);
 
     @Before
@@ -25,28 +25,23 @@ public class BankTest {
     }
 
     @Test
-    public void testTransfer() throws InterruptedException {
+    public void testTransfer() throws InterruptedException, ExecutionException {
 
         BigDecimal before = testBank.getSumBalance();
-        List<Thread> threads = new ArrayList<>();
-
-        for (int i = 0; i < threadCount; i++) {
-            threads.add(new Thread(() -> {
-                for (int j = 0; j < 100; j++) {
-                    try {
-                        testBank.transfer(String.format("%06d", testRandom.nextInt(100)),
-                                String.format("%06d", testRandom.nextInt(100)),
-                                BigDecimal.valueOf(testRandom.nextInt(55_000)));
-                    } catch (InterruptedException e) {
-                        logger.error(Thread.currentThread() + " " + e.getMessage());
-                    }
+        int accountCount = 1000;
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+        for (int j = 0; j < transactions; j++) {
+            pool.submit(() -> {
+                try {
+                    testBank.transfer(String.format("%06d", testRandom.nextInt(accountCount)),
+                            String.format("%06d", testRandom.nextInt(accountCount)),
+                            BigDecimal.valueOf(testRandom.nextInt(49_000)));
+                } catch (InterruptedException e) {
+                    logger.error(Thread.currentThread() + " " + e.getMessage());
                 }
-            }));
+            }).get();
         }
-        threads.forEach(Thread::start);
-        for (Thread thread : threads) {
-            thread.join();
-        }
+        pool.shutdown();  // ждём выполнения всех поставленных задач и отключаемся
         BigDecimal after = testBank.getSumBalance();
         assertEquals(before, after);
     }
