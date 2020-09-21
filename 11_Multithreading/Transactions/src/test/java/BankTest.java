@@ -1,3 +1,5 @@
+import bank.Bank;
+import bank.SuperPool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.After;
@@ -16,8 +18,8 @@ public class BankTest {
 
     private Bank testBank;
     private Random testRandom;
-    private final int threadCount = 10;
-    private final int transactions = 10_000;
+    private final int threadCount = 5;
+    private final int transactions = 10000;
     private Logger logger = LogManager.getLogger(BankTest.class);
 
     @Before
@@ -30,25 +32,29 @@ public class BankTest {
     public void testTransfer() throws InterruptedException, ExecutionException {
 
         BigDecimal before = testBank.getSumBalance();
-        int accountCount = 1000;
-        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+        int accountCount = 500;
+        //  ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+         SuperPool pool = new SuperPool(threadCount);
         List<Future<?>> futures = new ArrayList<>();
-
         for (int j = 0; j < transactions; j++) {
-            futures.add(pool.submit(() -> {
+            futures.add(pool.submit(() ->  {
                 try {
-                    testBank.transfer(String.format("%06d", testRandom.nextInt(accountCount)),
+                    testBank.smartTransfer(String.format("%06d", testRandom.nextInt(accountCount)),
                             String.format("%06d", testRandom.nextInt(accountCount)),
-                            BigDecimal.valueOf(testRandom.nextInt(50_050)));
+                            BigDecimal.valueOf(testRandom.nextInt(50_005)));
                 } catch (InterruptedException e) {
                     logger.error(Thread.currentThread() + " " + e.getMessage());
                 }
+             //   return null;
             }));
         }
         for (Future<?> future : futures) {
             future.get();
         }
         pool.shutdown();  // ждём выполнения всех поставленных задач и отключаемся
+
+
+
         BigDecimal after = testBank.getSumBalance();
         assertEquals(before, after);
     }

@@ -1,3 +1,5 @@
+package bank;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -12,7 +14,7 @@ public class Bank {
 
     public Bank() {  // при создании банка в целях удобства сразу создадим ему несколько сотен аккаунтов
         double startLimit = 300_000.0;
-        int accountCount = 1000;
+        int accountCount = 5000;
         for (int i = 0; i < accountCount; i++) {
             String name = String.format("%06d", i);
             this.accounts.put(name, new Account(name, BigDecimal.valueOf(startLimit)));
@@ -38,6 +40,23 @@ public class Bank {
                         accounts.get(toAccountNum).block();
                     }
         }
+    }
+     // метод для проверки callable. Как ни странно, всё работает
+    public BigDecimal smartTransfer(String fromAccountNum, String toAccountNum, BigDecimal amount) throws InterruptedException {
+       // BigDecimal result = new BigDecimal(BigInteger.ZERO);
+        if (checkAbility(fromAccountNum, toAccountNum, amount)) {     // проверяем корректность перевода
+            if (amount.compareTo(BigDecimal.valueOf(50000)) <= 0) {
+                accounts.get(fromAccountNum).withdraw(amount);  // если сумма мелкая - переводим
+                accounts.get(toAccountNum).deposit(amount);
+            } else if (checkFraud(fromAccountNum, toAccountNum, amount)) {
+                accounts.get(fromAccountNum).withdraw(amount);  // если не мошенничество - тож переводим
+                accounts.get(toAccountNum).deposit(amount);
+            } else {
+                accounts.get(fromAccountNum).block();  // если мошенничество - блокируем
+                accounts.get(toAccountNum).block();
+            }
+        }
+        return accounts.get(toAccountNum).getMoney();
     }
 
     public BigDecimal getSumBalance() {

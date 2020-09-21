@@ -1,3 +1,5 @@
+package bank;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +32,7 @@ public class Account {
 
     public synchronized void withdraw(BigDecimal money) {
         this.money = this.money.subtract(money);
-        logger.info(this.getAccNumber() + " Баланс:" + this.getMoney());
+    //    logger.info(this.getAccNumber() + " Баланс:" + this.getMoney());
     }
 
     public void block() {
