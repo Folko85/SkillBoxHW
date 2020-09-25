@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Library</title>
+    <script src="/js/jquery-3.4.0.min.js"></script>
+    <script src="/js/main.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+<body>
+    <div id="book-form">
+        <form>
+            <h2>Добавление книги</h2>
+            <label>Название книги:</label>
+            <input type="text" name="name" value="">
+            <label>Год выпуска:</label>
+            <input type="text" name="year" value="">
+            <hr>
+            <button id="save-book">Сохранить</button>
+        </form>
+    </div>
+    <h1>Библиотека (<span th:text="${booksCount}">0</span>)</h1>
+    <button id="show-add-book-form">Добавить книгу</button>
+    <br><br>
+    <div id="book-list">
+        <div th:each="book : ${books}">
+            <a href="#" class="book-link" th:attr="data-id=${book.id}" th:text="${book.name}"></a>
+        </div>
+    </div>
+    <p th:text="${someParameter}"></p>
+</body>
+</html>
