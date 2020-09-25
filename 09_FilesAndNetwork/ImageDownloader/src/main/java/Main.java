@@ -27,7 +27,7 @@ public class Main {
                     .filter(a -> a.contains(".jpg") || a.contains(".png") || a.contains(".gif")) // отфильтруем счётчики
                     .collect(Collectors.toList());
             if (!Files.exists(Paths.get(inputPath)) || !Files.isDirectory(Paths.get(inputPath))) {
-                if (new File(inputPath).mkdir()) {   //если папка, куда копируем не существет, то создаём её
+                if (new File(inputPath).mkdir()) {   //если папка, куда копируем не существует, то создаём её
                     logger.info("Создана папка: " + Paths.get(inputPath).toAbsolutePath());
                 }
             }
