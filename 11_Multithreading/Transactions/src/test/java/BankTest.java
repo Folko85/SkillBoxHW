@@ -19,7 +19,7 @@ public class BankTest {
     private Bank testBank;
     private Random testRandom;
     private final int threadCount = 5;
-    private final int transactions = 10000;
+    private final int transactions = 10_000_000;
     private Logger logger = LogManager.getLogger(BankTest.class);
 
     @Before

@@ -4,12 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.math.BigDecimal;
-import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Bank {
     private ConcurrentHashMap<String, Account> accounts = new ConcurrentHashMap<>();
-    private final Random random = new Random();
     Logger logger = LogManager.getLogger(Bank.class);
 
     public Bank() {  // при создании банка в целях удобства сразу создадим ему несколько сотен аккаунтов
@@ -21,10 +20,10 @@ public class Bank {
         }
     }
 
-    public synchronized boolean checkFraud(String fromAccountNum, String toAccountNum, BigDecimal amount)
+    public boolean checkFraud(String fromAccountNum, String toAccountNum, BigDecimal amount)
             throws InterruptedException {
         Thread.sleep(1000);
-        return random.nextBoolean();
+        return ThreadLocalRandom.current().nextBoolean();
     }
 
     public void transfer(String fromAccountNum, String toAccountNum, BigDecimal amount) throws InterruptedException {
