@@ -1,19 +1,25 @@
 package bank;
 
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class SuperPool implements Executor {
     private final BlockingDeque<Runnable> runQueue = new LinkedBlockingDeque<>();
     private volatile boolean isShutdown = false;
+    private volatile AtomicInteger threadCounter;
+    private int nThread;
 
     public SuperPool(int nThreads) {
-        for (int i = 0; i < nThreads; i++) {
-            new Worker().start();
-        }
+        this.threadCounter = new AtomicInteger();
+        this.nThread = nThreads;
     }
 
     @Override
     public void execute(Runnable command) {
+        if(threadCounter.get() < nThread){
+            new Worker().start();
+            threadCounter.getAndIncrement();
+        }
         if (!isShutdown) {
             runQueue.offer(command);
         }
@@ -27,7 +33,7 @@ public class SuperPool implements Executor {
 
     public Future<?> submit(Runnable runnable) {
         if (runnable == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         } else {
             RunnableFuture<Void> task = new FutureTask(runnable, null);
             this.execute(task);
@@ -38,7 +44,7 @@ public class SuperPool implements Executor {
 
     public <T> Future<T> submit(Runnable runnable, T result) {
         if (runnable == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         } else {
             RunnableFuture<T> task = new FutureTask<T>(runnable, result);
             this.execute(task);
@@ -49,7 +55,7 @@ public class SuperPool implements Executor {
 
     public <T> Future<T> submit(Callable<T> callable) {
         if (callable == null) {
-            throw new NullPointerException();
+            throw new IllegalArgumentException();
         } else {
             RunnableFuture<T> task = new FutureTask<T>(callable);
             this.execute(task);

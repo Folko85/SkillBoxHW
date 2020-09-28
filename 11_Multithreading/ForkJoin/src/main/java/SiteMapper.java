@@ -7,15 +7,15 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.RecursiveTask;
 import java.util.stream.Collectors;
 
 import static java.lang.Thread.sleep;
 
-public class SiteMapper extends RecursiveTask<CopyOnWriteArraySet<Node>> {
+public class SiteMapper extends RecursiveTask<Set<Node>> {
     private final Node parent;
-    private static CopyOnWriteArraySet<Node> allLinks = new CopyOnWriteArraySet<>();
+    private static Set<Node> allLinks = ConcurrentHashMap.newKeySet();
     private static final String SITE_URL = "https://skillbox.ru/";
     private static final Logger logger = LogManager.getLogger(SiteMapper.class);
 
@@ -25,14 +25,12 @@ public class SiteMapper extends RecursiveTask<CopyOnWriteArraySet<Node>> {
 
 
     @Override
-    protected CopyOnWriteArraySet<Node> compute() {
+    protected Set<Node> compute() {
         allLinks.add(parent);
-        CopyOnWriteArraySet<Node> childrenLinks = this.getChildrenLinks(parent);
+        Set<Node> childrenLinks = this.getChildrenLinks(parent);
         Set<SiteMapper> taskList = new HashSet<>();
         for (Node child : childrenLinks) {
-            SiteMapper task = new SiteMapper(child);
-            task.fork();
-            taskList.add(task);
+            taskList.add((SiteMapper) new SiteMapper(child).fork());
         }
         for (SiteMapper task : taskList) {
             allLinks.addAll(task.join());
@@ -40,7 +38,7 @@ public class SiteMapper extends RecursiveTask<CopyOnWriteArraySet<Node>> {
         return allLinks;
     }
 
-    private CopyOnWriteArraySet<Node> getChildrenLinks(Node parent) {
+    private Set<Node> getChildrenLinks(Node parent) {
         try {
             Document doc = Jsoup.connect(parent.getUrl())
                     .maxBodySize(0)
@@ -56,10 +54,11 @@ public class SiteMapper extends RecursiveTask<CopyOnWriteArraySet<Node>> {
             for (String link : absUrls) {
                 Node node = new Node(link, parent);
                 if (!allLinks.contains(node)){
-                    parent.addSubLinks(node);
+                    System.out.println(node);
+                    parent.addSubLink(node);
                 }
             }
-            sleep(500);
+            sleep(250);
         } catch (InterruptedException | IOException e) {
             logger.error("Возникла ошибка: " + e);
         }

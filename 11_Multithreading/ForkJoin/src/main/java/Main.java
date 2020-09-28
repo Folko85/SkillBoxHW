@@ -3,9 +3,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.*;
 import java.nio.file.Paths;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.ForkJoinPool;
 
 public class Main {
@@ -15,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) {
         Node rootUrl = new Node(SITE_URL);                 //чтобы потом корректно формировалось сделаем класс-узел
-        CopyOnWriteArraySet<Node> result = new ForkJoinPool().invoke(new SiteMapper(rootUrl));   // и кинем его в пул
+        Set<Node> result = new ForkJoinPool().invoke(new SiteMapper(rootUrl));   // и кинем его в пул
         TreeSet<Node> resultSet = new TreeSet<>(result);
         writeSitemapUrl(resultSet, SITEMAP_DOC);                            // а теперь уже пишем
     }
