@@ -1,6 +1,8 @@
 package main.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import main.model.Task;
+import main.model.TaskRepository;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ public abstract class AbstractIntegrationTest {
         mockMvc = MockMvcBuilders
                 .webAppContextSetup(ctx)
                 .build();
+        TaskRepository.addTask(new Task("taskText"));
     }
 }
 

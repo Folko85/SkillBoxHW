@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Список дел</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+<body style="background:#fcfcee;">
+<header style="text-align:center;"><h1>ToDoList</h1></header>
+<div style="text-align:center;">
+<button id="get-tasks" >Показать задачи</button>
+<button id="delete-tasks">Удалить все задачи</button><br><br>
+</div>
+    <table align="center" id="tasks-result" border="1"></table><br>
+<div style="text-align:center;">
+<input type="text" value="" id="new-task">
+<button id="create-task">Создать задачу</button>
+</div>
+<script src="/js/requests.js"></script>
+<script src="/js/view.js"></script>
+
+</body>
+</html>
