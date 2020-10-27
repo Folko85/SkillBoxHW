@@ -9,14 +9,14 @@ public class TaskRepository {
     private TaskRepository() {
     }
 
-    private static int currentId = 1;
+    private static volatile int currentId = 1;
     private static final ConcurrentHashMap<Integer, Task> allTasks = new ConcurrentHashMap<>();
 
     public static List<Task> getAllTasks() {
         return new ArrayList<>(allTasks.values());
     }
 
-    public static Task addTask(Task task) {
+    public static synchronized Task addTask(Task task) {
         int id = currentId++;
         task.setId(id);
         allTasks.put(id, task);
@@ -39,5 +39,9 @@ public class TaskRepository {
         int id = task.getId();
         allTasks.put(id, task);
         return task;
+    }
+
+    public static int getCurrentId(){
+        return currentId;
     }
 }

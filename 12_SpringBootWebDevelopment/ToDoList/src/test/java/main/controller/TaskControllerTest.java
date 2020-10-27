@@ -1,23 +1,73 @@
 package main.controller;
 
 import main.model.Task;
+import main.model.TaskRepository;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.util.Arrays;
+
+
 public class TaskControllerTest extends AbstractIntegrationTest {
 
-    @Test
-    public void testGetTasks() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/tasks")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isOk());
+    private Task task;
+
+    @Before              //обычное Before выполняется перед каждым тестом
+    public void setUpTest(){
+        task = new Task("taskText");
+        TaskRepository.addTask(task);
+    }
+
+    @After                      //поэтому после каждого теста удаляем все таски
+    public void tearDown(){
+        TaskRepository.deleteAllTasks();
     }
 
     @Test
-    public void testAddTask() throws Exception {
+    public void testGetTasksSuccess() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/tasks")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(Arrays.asList(task))));
+    }
+
+    @Test
+    public void testGetTasksFailure() throws Exception {
+        TaskRepository.deleteAllTasks();  // для этого теста нужны особые условия
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/tasks")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Задания отсутствуют"));
+    }
+
+    @Test
+    public void testGetTaskByIdSuccess() throws Exception {
+        int id = TaskRepository.getCurrentId() - 1;
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/tasks/{id}", id)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(task)));
+    }
+
+    @Test
+    public void testGetTaskByIdFailure() throws Exception {
+        TaskRepository.deleteAllTasks();  // для этого теста нужны особые условия
+        mockMvc.perform(MockMvcRequestBuilders
+                .get("/tasks/{id}", 100)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Задание отсутствует"));
+    }
+
+    @Test
+    public void testAddTaskSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .post("/tasks")
                 .content(mapper.writeValueAsString(new Task("titleText")))   //постим задачу
@@ -28,7 +78,18 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testEditTask() throws Exception {
+    public void testAddTaskFailure() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .post("/tasks")
+                .content(mapper.writeValueAsString(new Task("")))   //постим задачу
+                .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
+                .accept(MediaType.APPLICATION_JSON))                              //вернуть должно json
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())                      //статус 400
+                .andExpect(MockMvcResultMatchers.content().string("Нечего добавлять"));   //у возвращённых объектов есть id
+    }
+
+    @Test
+    public void testEditTaskSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .put("/tasks")
                 .content(mapper.writeValueAsString(new Task("newTitleText")))  //меняем текст на этот
@@ -39,9 +100,45 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testDeleteTasks() throws Exception {
+    public void testEditTaskFailure() throws Exception {   // в нашей реализации сделать так не выйдет, ну и фиг с ним
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/tasks/{id}", 1))
+                .put("/tasks")
+                .content(mapper.writeValueAsString(new Task("")))  //меняем текст на этот
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Задание не может быть пустым")); //проверяем, что сменился
+    }
+
+    @Test
+    public void testDeleteTaskByIdSuccess() throws Exception {
+        int id = TaskRepository.getCurrentId() - 1;   // удаляем последний элемент. Хз, почему эти тесты цепляются друг за дружку
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/tasks/{id}",id))
                 .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testDeleteTaskByIdFailure() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/tasks/{id}", 100))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Задание не существует"));
+    }
+
+    @Test
+    public void testDeleteTasksSuccess() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/tasks"))
+                .andExpect(MockMvcResultMatchers.status().isOk());
+    }
+
+    @Test
+    public void testDeleteTasksFailure() throws Exception {
+        TaskRepository.deleteAllTasks();   // тоже особые условия
+        mockMvc.perform(MockMvcRequestBuilders
+                .delete("/tasks"))
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Задания отсутствуют"));
     }
 }
