@@ -13,7 +13,9 @@ class ExceptionHandlerAdvice {
     @ExceptionHandler({EntityNotFoundException.class, EmptyFieldException.class})  // для начала сделал метод максимально простым
     public final ResponseEntity handleException(Exception ex,  WebRequest request) { // хз, что сюда ещё добавлять и зачем
         HttpHeaders headers = new HttpHeaders();
-        HttpStatus status = HttpStatus.BAD_REQUEST;
+        HttpStatus status;
+        if(ex instanceof EntityNotFoundException) status = HttpStatus.NOT_FOUND;  // для этого экзепшена нот фаунд
+        else status = HttpStatus.BAD_REQUEST;                            // для остальных бэд реквест
         return new ResponseEntity<>(ex.getMessage(), headers, status);
     }
 

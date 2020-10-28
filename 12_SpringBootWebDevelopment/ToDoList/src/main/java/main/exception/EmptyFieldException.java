@@ -1,6 +1,6 @@
 package main.exception;
 
-public class EmptyFieldException extends Exception {
+public class EmptyFieldException extends RuntimeException {
 
     public EmptyFieldException() {
     }

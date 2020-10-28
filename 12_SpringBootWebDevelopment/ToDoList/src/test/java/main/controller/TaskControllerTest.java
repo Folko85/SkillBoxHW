@@ -37,16 +37,6 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetTasksFailure() throws Exception {
-        TaskRepository.deleteAllTasks();  // для этого теста нужны особые условия
-        mockMvc.perform(MockMvcRequestBuilders
-                .get("/tasks")
-                .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("Задания отсутствуют"));
-    }
-
-    @Test
     public void testGetTaskByIdSuccess() throws Exception {
         int id = TaskRepository.getCurrentId() - 1;
         mockMvc.perform(MockMvcRequestBuilders
@@ -62,7 +52,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/tasks/{id}", 100)
                 .accept(MediaType.APPLICATION_JSON))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Задание отсутствует"));
     }
 
@@ -122,7 +112,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     public void testDeleteTaskByIdFailure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/tasks/{id}", 100))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Задание не существует"));
     }
 
@@ -138,7 +128,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
         TaskRepository.deleteAllTasks();   // тоже особые условия
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/tasks"))
-                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Задания отсутствуют"));
     }
 }

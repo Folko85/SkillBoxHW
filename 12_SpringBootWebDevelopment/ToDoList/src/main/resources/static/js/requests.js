@@ -2,8 +2,7 @@ function getTasks(){
 	const promise = axios.get("http://localhost:8080/tasks");
 	return promise.then((response) =>{
 		return response.data;
-		}).catch( (response) =>{
-        return null;});                 // и этого достаточно для корректной работы
+		});
 	}
 
 function createTask(title){
