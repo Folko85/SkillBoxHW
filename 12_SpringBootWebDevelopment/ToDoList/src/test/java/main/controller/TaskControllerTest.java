@@ -5,6 +5,7 @@ import main.model.TaskRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -14,17 +15,20 @@ import java.util.Arrays;
 
 public class TaskControllerTest extends AbstractIntegrationTest {
 
+    @Autowired
+    private TaskRepository repository;
+
     private Task task;
 
     @Before              //обычное Before выполняется перед каждым тестом
     public void setUpTest(){
         task = new Task("taskText");
-        TaskRepository.addTask(task);
+        repository.save(task);
     }
 
     @After                      //поэтому после каждого теста удаляем все таски
     public void tearDown(){
-        TaskRepository.deleteAllTasks();
+        repository.deleteAll();
     }
 
     @Test
@@ -38,7 +42,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetTaskByIdSuccess() throws Exception {
-        int id = TaskRepository.getCurrentId() - 1;
+        int id = repository.findById(task.getId()).get().getId();   // абракадабра какая-то
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/tasks/{id}", id)
                 .accept(MediaType.APPLICATION_JSON))
@@ -48,7 +52,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetTaskByIdFailure() throws Exception {
-        TaskRepository.deleteAllTasks();  // для этого теста нужны особые условия
+        repository.deleteAll();  // для этого теста нужны особые условия
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/tasks/{id}", 100)
                 .accept(MediaType.APPLICATION_JSON))
@@ -102,7 +106,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testDeleteTaskByIdSuccess() throws Exception {
-        int id = TaskRepository.getCurrentId() - 1;   // удаляем последний элемент. Хз, почему эти тесты цепляются друг за дружку
+        int id = repository.findById(task.getId()).get().getId();   // удаляем последний элемент. Хз, почему эти тесты цепляются друг за дружку
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/tasks/{id}",id))
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -125,7 +129,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testDeleteTasksFailure() throws Exception {
-        TaskRepository.deleteAllTasks();   // тоже особые условия
+        repository.deleteAll();   // тоже особые условия
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/tasks"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())

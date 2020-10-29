@@ -4,50 +4,54 @@ import main.exception.EmptyFieldException;
 import main.exception.EntityNotFoundException;
 import main.model.Task;
 import main.model.TaskRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class TaskController {        //чтоб достигнуть отрицательного сценария, пусть каждый метод кидает экзепшены
+public class TaskController {
+
+    @Autowired
+    private TaskRepository repository;
 
     @GetMapping("/tasks")
     public List<Task> getTasks() {
-        return TaskRepository.getAllTasks();
+        return (List<Task>) repository.findAll();
     }
 
     @GetMapping("/tasks/{id}")           // а вдруг мы изменим фронт
     public Task getTaskById(@PathVariable Integer id) {
-        if (TaskRepository.getTaskById(id) == null) {
-            throw new EntityNotFoundException("Задание отсутствует");
-        } else return TaskRepository.getTaskById(id);
+        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Задание отсутствует"));
     }
 
     @PostMapping("/tasks")
     public Task addTask(@RequestBody Task task) {
         if (task.getTitle().isEmpty()) {
             throw new EmptyFieldException("Нечего добавлять");
-        } else return TaskRepository.addTask(task);
+        } else return repository.save(task);
     }
 
     @PutMapping("/tasks")
     public Task editTask(@RequestBody Task task) {
         if (task.getTitle().isEmpty()) {
             throw new EmptyFieldException("Задание не может быть пустым");
-        } else return TaskRepository.editTask(task);
+        } else return repository.save(task);
     }
 
     @DeleteMapping("/tasks/{id}")
     public void deleteTaskById(@PathVariable Integer id) {
-        if (TaskRepository.getTaskById(id) == null) {
+        if (repository.findById(id).isEmpty()) {
             throw new EntityNotFoundException("Задание не существует");
-        } else TaskRepository.deleteTask(id);
+        } else repository.deleteById(id);
     }
 
     @DeleteMapping("/tasks")
     public void deleteTasks() {
-        if (TaskRepository.getAllTasks().isEmpty()) {
+        ArrayList<Task> tasks = (ArrayList<Task>) repository.findAll();
+        if (tasks.isEmpty()) {
             throw new EntityNotFoundException("Задания отсутствуют");
-        } else TaskRepository.deleteAllTasks();
+        } else repository.deleteAll();
     }
 }
