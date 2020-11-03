@@ -1,5 +1,6 @@
 package main.controller;
 
+import main.dto.TaskMapper;
 import main.model.Task;
 import main.model.TaskRepository;
 import org.junit.After;
@@ -12,11 +13,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 
-
 public class TaskControllerTest extends AbstractIntegrationTest {
 
     @Autowired
-    private TaskRepository repository;
+    private TaskRepository repository;                //в тестовом классе конструкторов нельзя
 
     private Task task;
 
@@ -37,7 +37,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
                 .get("/tasks")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(Arrays.asList(task))));
+                .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(Arrays.asList(TaskMapper.map(task)))));
     }
 
     @Test
@@ -47,7 +47,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
                 .get("/tasks/{id}", id)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(task)));
+                .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(TaskMapper.map(task))));
     }
 
     @Test
@@ -79,7 +79,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
                 .accept(MediaType.APPLICATION_JSON))                              //вернуть должно json
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())                      //статус 400
-                .andExpect(MockMvcResultMatchers.content().string("Нечего добавлять"));   //у возвращённых объектов есть id
+                .andExpect(MockMvcResultMatchers.content().string("Поле не может быть пустым"));   //у возвращённых объектов есть id
     }
 
     @Test
@@ -101,7 +101,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("Задание не может быть пустым")); //проверяем, что сменился
+                .andExpect(MockMvcResultMatchers.content().string("Поле не может быть пустым")); //проверяем, что сменился
     }
 
     @Test
