@@ -30,16 +30,18 @@ public class Task {
         return id;
     }
 
-    public void setId(int id) {
+    public Task setId(int id) {
         this.id = id;
+        return this;
     }
 
     public String getTitle() {
         return title;
     }
 
-    public void setTitle(String title) {
+    public Task setTitle(String title) {
         this.title = title;
+        return this;
     }
 
     public LocalDateTime getDateTimeOfCreate() {

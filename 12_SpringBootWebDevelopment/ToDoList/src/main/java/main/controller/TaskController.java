@@ -2,7 +2,6 @@ package main.controller;
 
 import main.dto.TaskMapper;
 import main.dto.TaskModel;
-import main.model.Task;
 import main.service.TaskService;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,13 +29,13 @@ public class TaskController {
     }
 
     @PostMapping("/tasks")
-    public TaskModel addTask(@Valid @RequestBody Task task) {
-        return TaskMapper.map(service.save(task));
+    public TaskModel addTask(@Valid @RequestBody TaskModel task) {
+        return TaskMapper.map(service.save(TaskMapper.reverseMap(task)));
     }
 
     @PutMapping("/tasks")
-    public TaskModel editTask(@Valid @RequestBody Task task) {
-        return TaskMapper.map(service.save(task));
+    public TaskModel editTask(@Valid @RequestBody TaskModel task) {
+        return TaskMapper.map(service.save(TaskMapper.reverseMap(task)));
     }
 
     @DeleteMapping("/tasks/{id}")

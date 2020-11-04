@@ -13,4 +13,10 @@ public class TaskMapper {
                 .setTitle(item.getTitle());
     }
 
+    public static Task reverseMap(TaskModel item) {
+        return new Task()
+                .setId(item.getId())
+                .setTitle(item.getTitle());
+    }
+
 }

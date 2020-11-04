@@ -1,8 +1,12 @@
 package main.dto;
 
+import javax.validation.constraints.NotBlank;
+
 public class TaskModel {
 
     private int id;
+
+    @NotBlank
     private String title;
 
     public int getId() {
