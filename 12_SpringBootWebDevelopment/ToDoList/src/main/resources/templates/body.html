@@ -1,0 +1,24 @@
+<html lang="en" xmlns:th="http://thymeleaf.org">
+<header style="text-align:center;"><h1>ToDoList</h1></header>
+<div id="inner-part" style="text-align:center;">
+    <button onclick="onAllTaskDelete()">Удалить все задачи</button><br><br>
+    <table align="center" border="1">
+        <thead>
+        <tr>
+            <th>Номер</th>
+            <th>Задача</th>
+            <th colspan="2">Действие</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="task : ${tasks}">
+            <td th:text="${task.id}"></td>
+            <td width="300" th:text="${task.title}"></td>
+            <td><button th:attr="onclick=|onTaskEdit('${task.id}')|">Изменить</button></td>
+            <td><button th:attr="onclick=|onTaskDelete('${task.id}')|">Удалить</button></td>
+        </tr>
+        </tbody>
+    </table><br>
+    <input type="text" value="" id="new-task">
+    <button onclick="onTaskCreate()">Создать задачу</button>
+</div>

@@ -3,13 +3,15 @@ package main.controller;
 import main.dto.TaskMapper;
 import main.dto.TaskModel;
 import main.service.TaskService;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@RestController
+@Controller
 public class TaskController {
 
     private final TaskService service;
@@ -18,33 +20,41 @@ public class TaskController {
         this.service = service;
     }
 
-    @GetMapping("/tasks")
-    public List<TaskModel> getTasks() {
-        return service.findAll().stream().map(TaskMapper::map).collect(Collectors.toList());
+    @GetMapping("/")
+    public String start(Model model) {
+        List<TaskModel> tasks = service.findAll().stream().map(TaskMapper::map).collect(Collectors.toList());
+        model.addAttribute("tasks", tasks);
+        return "index";
     }
 
-    @GetMapping("/tasks/{id}")           // а вдруг мы изменим фронт
-    public TaskModel getTaskById(@PathVariable Integer id) {
-        return TaskMapper.map(service.findById(id));
+    @GetMapping("/tasks")
+    public String getTasks(Model model) {
+        List<TaskModel> tasks = service.findAll().stream().map(TaskMapper::map).collect(Collectors.toList());
+        model.addAttribute("tasks", tasks);
+        return "body";
     }
 
     @PostMapping("/tasks")
-    public TaskModel addTask(@Valid @RequestBody TaskModel task) {
-        return TaskMapper.map(service.save(TaskMapper.reverseMap(task)));
+    public String addTask(@Valid @RequestBody TaskModel task, Model model) {
+        service.save(TaskMapper.reverseMap(task));
+        return getTasks(model);
     }
 
     @PutMapping("/tasks")
-    public TaskModel editTask(@Valid @RequestBody TaskModel task) {
-        return TaskMapper.map(service.save(TaskMapper.reverseMap(task)));
+    public String editTask(@Valid @RequestBody TaskModel task, Model model) {
+        service.save(TaskMapper.reverseMap(task));
+        return getTasks(model);
     }
 
     @DeleteMapping("/tasks/{id}")
-    public void deleteTaskById(@PathVariable Integer id) {
+    public String deleteTaskById(@PathVariable Integer id, Model model) {
         service.deleteById(id);
+        return getTasks(model);
     }
 
     @DeleteMapping("/tasks")
-    public void deleteTasks() {
+    public String deleteTasks(Model model) {
         service.deleteAll();
+        return getTasks(model);
     }
 }

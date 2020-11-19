@@ -13,7 +13,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.Arrays;
 
-public class TaskControllerTest extends AbstractIntegrationTest {
+public class ApiControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private TaskRepository repository;                //в тестовом классе конструкторов нельзя
@@ -34,7 +34,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     @Test
     public void testGetTasksSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/tasks")
+                .get("/api/tasks")
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(Arrays.asList(TaskMapper.map(task)))));
@@ -44,7 +44,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     public void testGetTaskByIdSuccess() throws Exception {
         int id = repository.findById(task.getId()).get().getId();   // абракадабра какая-то
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/tasks/{id}", id)
+                .get("/api/tasks/{id}", id)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().json(mapper.writeValueAsString(TaskMapper.map(task))));
@@ -54,7 +54,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     public void testGetTaskByIdFailure() throws Exception {
         repository.deleteAll();  // для этого теста нужны особые условия
         mockMvc.perform(MockMvcRequestBuilders
-                .get("/tasks/{id}", 100)
+                .get("/api/tasks/{id}", 100)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Задание отсутствует"));
@@ -63,7 +63,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     @Test
     public void testAddTaskSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/tasks")
+                .post("/api/tasks")
                 .content(mapper.writeValueAsString(new Task("titleText")))   //постим задачу
                 .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
                 .accept(MediaType.APPLICATION_JSON))                              //вернуть должно json
@@ -74,7 +74,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     @Test
     public void testAddTaskFailure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .post("/tasks")
+                .post("/api/tasks")
                 .content(mapper.writeValueAsString(new Task("")))   //постим задачу
                 .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
                 .accept(MediaType.APPLICATION_JSON))                              //вернуть должно json
@@ -85,7 +85,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     @Test
     public void testEditTaskSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/tasks")
+                .put("/api/tasks")
                 .content(mapper.writeValueAsString(new Task("newTitleText")))  //меняем текст на этот
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -96,7 +96,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     @Test
     public void testEditTaskFailure() throws Exception {   // в нашей реализации сделать так не выйдет, ну и фиг с ним
         mockMvc.perform(MockMvcRequestBuilders
-                .put("/tasks")
+                .put("/api/tasks")
                 .content(mapper.writeValueAsString(new Task("")))  //меняем текст на этот
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
@@ -108,14 +108,14 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     public void testDeleteTaskByIdSuccess() throws Exception {
         int id = repository.findById(task.getId()).get().getId();   // удаляем последний элемент. Хз, почему эти тесты цепляются друг за дружку
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/tasks/{id}",id))
+                .delete("/api/tasks/{id}",id))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
     @Test
     public void testDeleteTaskByIdFailure() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/tasks/{id}", 100))
+                .delete("/api/tasks/{id}", 100))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Задание не существует"));
     }
@@ -123,7 +123,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     @Test
     public void testDeleteTasksSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/tasks"))
+                .delete("/api/tasks"))
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
@@ -131,7 +131,7 @@ public class TaskControllerTest extends AbstractIntegrationTest {
     public void testDeleteTasksFailure() throws Exception {
         repository.deleteAll();   // тоже особые условия
         mockMvc.perform(MockMvcRequestBuilders
-                .delete("/tasks"))
+                .delete("/api/tasks"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
                 .andExpect(MockMvcResultMatchers.content().string("Задания отсутствуют"));
     }

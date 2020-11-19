@@ -24,14 +24,14 @@ function updateTask(title, id){
 		});
 	}
 
-	function deleteAllTasks(){
+function deleteAllTasks(){
 	const promise = axios.delete("http://localhost:8080/tasks");
 	return promise.then((response) =>{
 		return response.data;
 		});
 	}
 
-	function deleteTask(id){
+function deleteTask(id){
 	const promise = axios.delete("http://localhost:8080/tasks/" +id);
 	return promise.then((response) =>{
 		return response.data;
