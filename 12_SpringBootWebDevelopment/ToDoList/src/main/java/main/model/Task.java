@@ -5,6 +5,7 @@ import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Entity
+@Table (name = "task_tab")
 public class Task {
 
     public Task(String title) {
@@ -18,21 +19,34 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private int id;
+    private Long id;
 
     @NotBlank
     private String title;
 
-    @Column(columnDefinition = "date_time_of_create")
+    @Column(name = "date_time_of_create")
     private LocalDateTime dateTimeOfCreate;
 
-    public int getId() {
+    @ManyToOne
+    @JoinColumn (name = "user_id")
+    private User user;
+
+    public Long getId() {
         return id;
     }
 
-    public Task setId(int id) {
+    public Task setId(Long id) {
         this.id = id;
         return this;
+    }
+
+    public Task setUser(User user) {
+        this.user = user;
+        return this;
+    }
+
+    public User getUser() {
+        return this.user;
     }
 
     public String getTitle() {

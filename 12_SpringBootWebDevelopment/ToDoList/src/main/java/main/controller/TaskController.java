@@ -1,8 +1,9 @@
 package main.controller;
 
-import main.dto.TaskMapper;
+import main.mapper.TaskMapper;
 import main.dto.TaskModel;
 import main.service.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ public class TaskController {
 
     private final TaskService service;
 
+    @Autowired
     public TaskController(TaskService service) {
         this.service = service;
     }
@@ -31,7 +33,7 @@ public class TaskController {
     public String getTasks(Model model) {
         List<TaskModel> tasks = service.findAll().stream().map(TaskMapper::map).collect(Collectors.toList());
         model.addAttribute("tasks", tasks);
-        return "body";
+        return "index";
     }
 
     @PostMapping("/tasks")
@@ -47,7 +49,7 @@ public class TaskController {
     }
 
     @DeleteMapping("/tasks/{id}")
-    public String deleteTaskById(@PathVariable Integer id, Model model) {
+    public String deleteTaskById(@PathVariable Long id, Model model) {
         service.deleteById(id);
         return getTasks(model);
     }

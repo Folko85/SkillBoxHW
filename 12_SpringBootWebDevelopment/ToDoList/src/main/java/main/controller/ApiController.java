@@ -1,8 +1,9 @@
 package main.controller;
 
-import main.dto.TaskMapper;
+import main.mapper.TaskMapper;
 import main.dto.TaskModel;
 import main.service.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -14,6 +15,7 @@ public class ApiController {
 
     private final TaskService service;
 
+    @Autowired
     public ApiController(TaskService service) {
         this.service = service;
     }
@@ -24,7 +26,7 @@ public class ApiController {
     }
 
     @GetMapping("/api/tasks/{id}")           // а вдруг мы изменим фронт
-    public TaskModel getTaskById(@PathVariable Integer id) {
+    public TaskModel getTaskById(@PathVariable Long id) {
         return TaskMapper.map(service.findById(id));
     }
 
@@ -39,7 +41,7 @@ public class ApiController {
     }
 
     @DeleteMapping("/api/tasks/{id}")
-    public void deleteTaskById(@PathVariable Integer id) {
+    public void deleteTaskById(@PathVariable Long id) {
         service.deleteById(id);
     }
 

@@ -4,16 +4,16 @@ import javax.validation.constraints.NotBlank;
 
 public class TaskModel {
 
-    private int id;
+    private Long id;
 
     @NotBlank
     private String title;
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public TaskModel setId(int id) {
+    public TaskModel setId(Long id) {
         this.id = id;
         return this;
     }

@@ -1,8 +1,8 @@
 package main.controller;
 
-import main.dto.TaskMapper;
+import main.mapper.TaskMapper;
 import main.model.Task;
-import main.model.TaskRepository;
+import main.repository.TaskRepository;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,7 +42,7 @@ public class ApiControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetTaskByIdSuccess() throws Exception {
-        int id = repository.findById(task.getId()).get().getId();   // абракадабра какая-то
+        long id = task.getId();   // абракадабра какая-то
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/tasks/{id}", id)
                 .accept(MediaType.APPLICATION_JSON))
@@ -106,7 +106,7 @@ public class ApiControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testDeleteTaskByIdSuccess() throws Exception {
-        int id = repository.findById(task.getId()).get().getId();   // удаляем последний элемент. Хз, почему эти тесты цепляются друг за дружку
+        long id = task.getId();   // удаляем последний элемент. Хз, почему эти тесты цепляются друг за дружку
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/api/tasks/{id}",id))
                 .andExpect(MockMvcResultMatchers.status().isOk());

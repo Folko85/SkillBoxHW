@@ -3,6 +3,7 @@ package main.exception;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,7 +12,7 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 class ExceptionHandlerAdvice {
 
-    @ExceptionHandler({EntityNotFoundException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({EntityNotFoundException.class, UsernameNotFoundException.class, MethodArgumentNotValidException.class})
     // для начала сделал метод максимально простым
     public final ResponseEntity handleException(Exception ex, WebRequest request) { // хз, что сюда ещё добавлять и зачем
         HttpHeaders headers = new HttpHeaders();
@@ -21,7 +22,10 @@ class ExceptionHandlerAdvice {
             status = HttpStatus.NOT_FOUND;
             message = ex.getMessage();
         }  // для этого экзепшена нот фаунд
-        else {
+        else if (ex instanceof UsernameNotFoundException) {
+            status = HttpStatus.UNAUTHORIZED;
+            message = ex.getMessage();
+        } else {
             status = HttpStatus.BAD_REQUEST;
             message = "Поле не может быть пустым";
         }                            // для остальных бэд реквест

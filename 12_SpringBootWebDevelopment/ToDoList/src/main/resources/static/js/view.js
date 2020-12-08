@@ -30,6 +30,6 @@ function onTaskCreate(){
 
 function onTasksReceived(data){
 	const result = document.querySelector('body');
-	result.innerHTML = "";
-	result.insertAdjacentHTML('afterbegin', data);
+	const resultNew = data.querySelector('body')
+	result.replaceWith(resultNew)
 	}
