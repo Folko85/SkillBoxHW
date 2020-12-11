@@ -27,7 +27,7 @@ class ExceptionHandlerAdvice {
             message = ex.getMessage();
         } else {
             status = HttpStatus.BAD_REQUEST;
-            message = "Поле не может быть пустым";
+            message = "Field cannot being empty";
         }                            // для остальных бэд реквест
         return new ResponseEntity<>(message, headers, status);
     }

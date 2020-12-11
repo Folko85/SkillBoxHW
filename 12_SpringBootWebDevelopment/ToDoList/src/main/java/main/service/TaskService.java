@@ -26,7 +26,7 @@ public class TaskService {
     }
 
     public Task findById(Long id) {
-        return taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Задание отсутствует"));
+        return taskRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Task is not exist"));
     }
 
     public List<Task> findAll() {
@@ -43,14 +43,14 @@ public class TaskService {
 
     public void deleteById(Long id) {
         if (taskRepository.findById(id).isEmpty()) {
-            throw new EntityNotFoundException("Задание не существует");
+            throw new EntityNotFoundException("Task is not exist");
         } else taskRepository.deleteById(id);
     }
 
     public void deleteAll() {
         ArrayList<Task> tasks = (ArrayList<Task>) taskRepository.findAll();
         if (tasks.isEmpty()) {
-            throw new EntityNotFoundException("Задания отсутствуют");
+            throw new EntityNotFoundException("Task is not exist");
         } else taskRepository.deleteAll();
     }
 }

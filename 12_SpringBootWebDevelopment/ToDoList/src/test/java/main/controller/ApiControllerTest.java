@@ -8,6 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
@@ -17,11 +20,11 @@ public class ApiControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private TaskRepository repository;                //в тестовом классе конструкторов нельзя
-
     private Task task;
 
     @Before              //обычное Before выполняется перед каждым тестом
     public void setUpTest(){
+      //  SecurityContextHolder.getContext().setAuthentication(null);
         task = new Task("taskText");
         repository.save(task);
     }
@@ -32,6 +35,7 @@ public class ApiControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
+    @WithMockUser
     public void testGetTasksSuccess() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders
                 .get("/api/tasks")
@@ -57,7 +61,7 @@ public class ApiControllerTest extends AbstractIntegrationTest {
                 .get("/api/tasks/{id}", 100)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("Задание отсутствует"));
+                .andExpect(MockMvcResultMatchers.content().string("Task is not exist"));
     }
 
     @Test
@@ -79,7 +83,7 @@ public class ApiControllerTest extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)                          //тип на входе json
                 .accept(MediaType.APPLICATION_JSON))                              //вернуть должно json
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())                      //статус 400
-                .andExpect(MockMvcResultMatchers.content().string("Поле не может быть пустым"));   //у возвращённых объектов есть id
+                .andExpect(MockMvcResultMatchers.content().string("Field cannot being empty"));   //у возвращённых объектов есть id
     }
 
     @Test
@@ -101,7 +105,7 @@ public class ApiControllerTest extends AbstractIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
-                .andExpect(MockMvcResultMatchers.content().string("Поле не может быть пустым")); //проверяем, что сменился
+                .andExpect(MockMvcResultMatchers.content().string("Field cannot being empty")); //проверяем, что сменился
     }
 
     @Test
@@ -117,7 +121,7 @@ public class ApiControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/api/tasks/{id}", 100))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("Задание не существует"));
+                .andExpect(MockMvcResultMatchers.content().string("Task is not exist"));
     }
 
     @Test
@@ -133,6 +137,6 @@ public class ApiControllerTest extends AbstractIntegrationTest {
         mockMvc.perform(MockMvcRequestBuilders
                 .delete("/api/tasks"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound())
-                .andExpect(MockMvcResultMatchers.content().string("Задания отсутствуют"));
+                .andExpect(MockMvcResultMatchers.content().string("Task is not exist"));
     }
 }
