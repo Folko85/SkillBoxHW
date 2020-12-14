@@ -30,8 +30,11 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<Role> roles = new HashSet<>();
+        Set<Role> roles = new HashSet<Role>();
         roles.add(Role.USER);
+        if (this.id == 1) {
+            roles.add(Role.MODERATOR);
+        }
         return roles;
     }
 
