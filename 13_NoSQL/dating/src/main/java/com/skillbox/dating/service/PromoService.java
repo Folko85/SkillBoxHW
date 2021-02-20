@@ -3,7 +3,6 @@ package com.skillbox.dating.service;
 import com.skillbox.dating.model.Mate;
 import com.skillbox.dating.repository.MateRepository;
 import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -21,13 +20,12 @@ public class PromoService {
 
     @Scheduled(fixedDelay = 30000)
     public void setPromo() {
-        ZSetOperations.TypedTuple tuple = mateRepository.findRandomMate();
-        if (tuple != null) {
-            Mate promoMate = new Mate(tuple.getValue().toString());
-            double topScore = mateRepository.findTopMate().getScore();
-            mateRepository.deleteMate(promoMate);
-            promoMate.setPromo(true);
-            mateRepository.add(promoMate, topScore - 1);
-        }
+        ZSetOperations.TypedTuple<Mate> tuple = mateRepository.findRandomMate();
+        Mate promoMate = tuple.getValue();
+        assert promoMate != null;
+        double topScore = mateRepository.findTopMate().getScore();
+        mateRepository.deleteMate(promoMate);
+        promoMate.setPromo(true);
+        mateRepository.add(promoMate, topScore - 1);
     }
 }

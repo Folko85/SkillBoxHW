@@ -7,7 +7,7 @@ import java.util.Set;
 
 public interface RedisRepository {
 
-    Set<Object> findAllMates();
+    Set<Mate> findAllMates();
 
     void add(Mate mate, double score);
 
@@ -15,9 +15,9 @@ public interface RedisRepository {
 
     void replaceTopMate();
 
-    ZSetOperations.TypedTuple findTopMate();
+    ZSetOperations.TypedTuple<Mate> findTopMate();
 
-    ZSetOperations.TypedTuple findRandomMate();
+    ZSetOperations.TypedTuple<Mate> findRandomMate();
 
     void deleteAll();
 }

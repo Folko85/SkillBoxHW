@@ -6,12 +6,20 @@ import com.skillbox.dating.repository.MateRepository;
 import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 
-import java.time.ZoneId;
-import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Service
 public class DatingService {
+
+    private final String pattern = "yyyy-MM-dd";
+
+    private DateFormat dateFormat = new SimpleDateFormat(pattern);
 
     private final MateRepository repository;
 
@@ -23,10 +31,10 @@ public class DatingService {
         repository.deleteAll();
         List<Mate> mates = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-            Faker faker = new Faker();
+            Faker faker = new Faker(new Locale("RU"));
             Mate mate = new Mate();
             mate.setFullName(faker.name().fullName());
-            mate.setRegistrationDate(faker.date().between(new Date(120, 0, 1), new Date(120, 11, 31)).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+            mate.setRegistrationDate(dateFormat.format(faker.date().birthday(1, 5)));
             mates.add(mate);
         }
         mates.sort(Comparator.comparing(Mate::getRegistrationDate).reversed());
@@ -36,13 +44,14 @@ public class DatingService {
     }
 
     public List<Mate> getMates(){
-        return repository.findAllMates().stream().map(o -> o.toString()).map(s -> new Mate (s)).collect(Collectors.toUnmodifiableList());
+        return repository.findAllMates().stream().collect(Collectors.toUnmodifiableList());
     }
 
     public List<Mate> replaceTopMate(){
-        ZSetOperations.TypedTuple tuple = repository.findTopMate();
-        Mate topMate = new Mate(tuple.getValue().toString());
+        ZSetOperations.TypedTuple<Mate> tuple = repository.findTopMate();
+        Mate topMate = tuple.getValue();
 
+        assert topMate != null;
         if (topMate.isPromo()){
             List<Mate> mates = getMates();
             endOfPromo(tuple);
@@ -53,8 +62,8 @@ public class DatingService {
         }
     }
 
-    public void endOfPromo(ZSetOperations.TypedTuple promoMate){
-        Mate mate = new Mate(promoMate.getValue().toString());
+    public void endOfPromo(ZSetOperations.TypedTuple<Mate> promoMate){
+        Mate mate = promoMate.getValue();
         repository.deleteMate(mate);
         mate.setPromo(false);
         repository.add(mate, promoMate.getScore());
