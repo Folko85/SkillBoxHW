@@ -1,65 +1,49 @@
 package com.skillbox.webshop.controller;
 
-import com.skillbox.webshop.exception.NotFoundException;
+import com.skillbox.webshop.model.Item;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("item")
 public class ItemController {
 
-    private int counter = 4;
-    private List<Map<String, String>> items = new ArrayList<>() {{
-        add(new HashMap<>() {{
-            put("id", "1");
-            put("text", "first message");
-        }});
-        add(new HashMap<>() {{
-            put("id", "2");
-            put("text", "second message");
-        }});
-        add(new HashMap<>() {{
-            put("id", "3");
-            put("text", "third message");
-        }});
-    }};
-
     @GetMapping
-    public List<Map<String, String>> list() {
-        return items;
+    public List<Item> getAllItems() {
+        // some doing
+        return new ArrayList<>();
+    }
+
+    // Кроме стандартного круд у нас будет получение всех товаров для определённого магазина
+    @GetMapping ("{shop}")
+    public List<Item> getItemsInShop(@PathVariable String shop) {
+        // some doing
+        return new ArrayList<>();
     }
 
     @GetMapping("{id}")
-    public Map<String, String> getOne(@PathVariable String id) {
-        return getId(id);
+    public Item getOneItem (@PathVariable String id) {
+        // some doing
+        return new Item();
     }
 
     @PostMapping
-    public Map<String, String> create(@RequestBody Map<String, String> item) {
-        item.put("id", String.valueOf(counter++));
-        items.add(item);
+    public Item createItem (@RequestBody Item item) {
+        // some doing
         return item;
     }
 
-    @PutMapping("{id}")
-    public Map<String, String> update(@PathVariable String id, @RequestBody Map<String, String> item) {
-        Map<String, String> itemFromDB = getId(id);
-        itemFromDB.putAll(item);
-        itemFromDB.put("id", id);
-        return itemFromDB;
+    @PutMapping
+    public Item updateItem (@RequestBody Item item) {
+        // some doing
+        return item;
     }
 
     @DeleteMapping("{id}")
-    public void delete(@PathVariable String id) {
-        Map<String, String> item = getId(id);
-        items.remove(item);
+    public void deleteItem(@PathVariable String id) {
+        // some doing
     }
 
-    private Map<String, String> getId(String id) {
-        return items.stream().filter(item -> item.get("id").equals(id)).findFirst().orElseThrow(NotFoundException::new);
-    }
 }
