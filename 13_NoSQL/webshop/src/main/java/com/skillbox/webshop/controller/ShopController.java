@@ -2,57 +2,63 @@ package com.skillbox.webshop.controller;
 
 import com.skillbox.webshop.model.Item;
 import com.skillbox.webshop.model.Shop;
+import com.skillbox.webshop.service.ShopService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping ("shop")
+@RequestMapping("shop")
 public class ShopController {
+
+    private final ShopService shopService;
+
+    public ShopController(ShopService shopService) {
+        this.shopService = shopService;
+    }
 
     @GetMapping
     public List<Shop> getAllShops() {
-        // some doing
-        return new ArrayList<>();
+        return shopService.getAllShops();
     }
 
     @GetMapping("{id}")
-    public Shop getCurrentShop (@PathVariable String id) {
-        // some doing
-        return new Shop();
+    public Shop getCurrentShop(@PathVariable String id) {
+        return shopService.getCurrentShop(id);
     }
 
     @PostMapping
-    public Shop addShop (@RequestBody Shop shop) {
-        // some doing
-        return shop;
+    public Shop addShop(@RequestBody Shop shop) {
+        return shopService.saveShop(shop);
     }
 
     // Хоть запрос ограничивается переменными и не содержит тела, но суть запроса в добавлении информации, поэтому post
     // Этот метод будет добавлять товар в количестве amount магазину
     @PostMapping()
-    public List<Item> addItemToShop (@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount ) {
-        // some doing
-        return new ArrayList<>();
+    public List<Item> addItemToShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
+
+        return shopService.saveItemToShop(shopId, itemId, amount);
     }
 
     // Этот метод будет изменять количество товара в магазине
     @PutMapping()
-    public List<Item> changeItemInShop (@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount ) {
+    public List<Item> changeItemInShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
         // some doing
-        return new ArrayList<>();
+        return shopService.saveItemToShop(shopId, itemId, amount);
     }
 
     @PutMapping
-    public Shop updateShopInfo (@RequestBody Shop shop) {
+    public Shop updateShopInfo(@RequestBody Shop shop) {
         // some doing
-        return shop;
+        return shopService.saveShop(shop);
     }
 
     @DeleteMapping("{id}")
     public void removeShop(@PathVariable String id) {
-        // some doing
+            shopService.deleteShop(id);
     }
-
 }
+
+/**
+ * ToDo: add swagger
+ */

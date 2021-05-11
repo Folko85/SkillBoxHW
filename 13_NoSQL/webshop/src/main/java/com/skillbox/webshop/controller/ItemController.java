@@ -1,49 +1,55 @@
 package com.skillbox.webshop.controller;
 
 import com.skillbox.webshop.model.Item;
+import com.skillbox.webshop.service.ItemService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("item")
 public class ItemController {
 
+    private final ItemService itemService;
+
+    public ItemController(ItemService itemService) {
+        this.itemService = itemService;
+    }
+
     @GetMapping
     public List<Item> getAllItems() {
-        // some doing
-        return new ArrayList<>();
+        return itemService.getAllItems();
     }
 
     // Кроме стандартного круд у нас будет получение всех товаров для определённого магазина
-    @GetMapping ("{shop}")
-    public List<Item> getItemsInShop(@PathVariable String shop) {
-        // some doing
-        return new ArrayList<>();
+    @GetMapping("{shopId}")
+    public List<Item> getItemsInShop(@PathVariable String shopId) {
+        return itemService.getItemsInShop(shopId);
     }
 
     @GetMapping("{id}")
-    public Item getOneItem (@PathVariable String id) {
-        // some doing
-        return new Item();
+    public Item getOneItem(@PathVariable String id) {
+        return itemService.getOneItem();
     }
 
     @PostMapping
-    public Item createItem (@RequestBody Item item) {
-        // some doing
-        return item;
+    public Item createItem(@RequestBody Item item) {
+        return itemService.saveItem(item);
     }
 
     @PutMapping
-    public Item updateItem (@RequestBody Item item) {
-        // some doing
-        return item;
+    public Item updateItem(@RequestBody Item item) {
+        return itemService.saveItem(item);
     }
 
     @DeleteMapping("{id}")
     public void deleteItem(@PathVariable String id) {
-        // some doing
+        itemService.deleteItem(id);
     }
 
 }
+
+
+/**
+ * ToDo: add swagger
+ */
