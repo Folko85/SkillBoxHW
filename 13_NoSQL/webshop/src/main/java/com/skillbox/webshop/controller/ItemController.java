@@ -2,12 +2,20 @@ package com.skillbox.webshop.controller;
 
 import com.skillbox.webshop.model.Item;
 import com.skillbox.webshop.service.ItemService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("item")
+@Tag(name = "Item", description = "The Item API")
 public class ItemController {
 
     private final ItemService itemService;
@@ -16,6 +24,17 @@ public class ItemController {
         this.itemService = itemService;
     }
 
+    @Operation(summary = "Получить список товаров", tags = "Item")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Found the items",
+                    content = {
+                            @Content(
+                                    mediaType = "application/json",
+                                    array = @ArraySchema(schema = @Schema(implementation = Item.class)))
+                    })
+    })
     @GetMapping
     public List<Item> getAllItems() {
         return itemService.getAllItems();
@@ -26,6 +45,13 @@ public class ItemController {
     public List<Item> getItemsInShop(@PathVariable String shopId) {
         return itemService.getItemsInShop(shopId);
     }
+
+    // а также, требуемая по заданию статистика для магазина
+    @GetMapping("{shopId}")
+    public String getStatisticsForShop(@PathVariable String shopId) {
+        return "";
+    }
+
 
     @GetMapping("{id}")
     public Item getOneItem(@PathVariable String id) {

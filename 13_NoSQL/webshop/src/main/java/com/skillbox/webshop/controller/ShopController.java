@@ -33,9 +33,9 @@ public class ShopController {
     }
 
     // Хоть запрос ограничивается переменными и не содержит тела, но суть запроса в добавлении информации, поэтому post
-    // Этот метод будет добавлять товар в количестве amount магазину
+    // Этот метод будет выставлять товар в количестве amount в магазин
     @PostMapping()
-    public List<Item> addItemToShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
+    public List<Item> exposeItemToShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
 
         return shopService.saveItemToShop(shopId, itemId, amount);
     }
