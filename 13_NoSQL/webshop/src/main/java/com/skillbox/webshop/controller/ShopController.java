@@ -17,7 +17,7 @@ public class ShopController {
         this.shopService = shopService;
     }
 
-    @GetMapping
+    @GetMapping()
     public List<Shop> getAllShops() {
         return shopService.getAllShops();
     }
@@ -27,27 +27,27 @@ public class ShopController {
         return shopService.getCurrentShop(id);
     }
 
-    @PostMapping
+    @PostMapping()
     public Shop addShop(@RequestBody Shop shop) {
         return shopService.saveShop(shop);
     }
 
     // Хоть запрос ограничивается переменными и не содержит тела, но суть запроса в добавлении информации, поэтому post
     // Этот метод будет выставлять товар в количестве amount в магазин
-    @PostMapping()
+    @PostMapping("/expose")
     public List<Item> exposeItemToShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
 
         return shopService.saveItemToShop(shopId, itemId, amount);
     }
 
     // Этот метод будет изменять количество товара в магазине
-    @PutMapping()
-    public List<Item> changeItemInShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
+    @PutMapping("/item/{itemId}/update")
+    public List<Item> changeItemInShop(@RequestParam String shopId, @PathVariable String itemId, @RequestParam String amount) {
         // some doing
         return shopService.saveItemToShop(shopId, itemId, amount);
     }
 
-    @PutMapping
+    @PutMapping("/update")
     public Shop updateShopInfo(@RequestBody Shop shop) {
         // some doing
         return shopService.saveShop(shop);

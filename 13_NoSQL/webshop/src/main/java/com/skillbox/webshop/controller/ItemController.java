@@ -15,7 +15,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("item")
-@Tag(name = "Item", description = "The Item API")
 public class ItemController {
 
     private final ItemService itemService;
@@ -24,17 +23,6 @@ public class ItemController {
         this.itemService = itemService;
     }
 
-    @Operation(summary = "Получить список товаров", tags = "Item")
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Found the items",
-                    content = {
-                            @Content(
-                                    mediaType = "application/json",
-                                    array = @ArraySchema(schema = @Schema(implementation = Item.class)))
-                    })
-    })
     @GetMapping
     public List<Item> getAllItems() {
         return itemService.getAllItems();
@@ -47,7 +35,7 @@ public class ItemController {
     }
 
     // а также, требуемая по заданию статистика для магазина
-    @GetMapping("{shopId}")
+    @GetMapping("/info/{shopId}")
     public String getStatisticsForShop(@PathVariable String shopId) {
         return "";
     }

@@ -1,7 +1,6 @@
 plugins {
 	id 'org.springframework.boot' version '2.4.3'
 	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-	id "io.swagger.core.v3.swagger-gradle-plugin" version "2.1.9"
 	id 'java'
 }
 
@@ -23,7 +22,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springdoc:springdoc-openapi-ui:1.5.8'
-	implementation 'io.swagger.core.v3:swagger-core:2.1.9'
+	implementation "io.springfox:springfox-swagger2:3.0.0"
+	implementation "io.springfox:springfox-swagger-ui:3.0.0"
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -33,11 +33,3 @@ test {
 	useJUnitPlatform()
 }
 
-resolve {
-	outputFileName = 'WebShopAPI'
-	outputFormat = 'JSON'
-	prettyPrint = 'TRUE'
-	classpath = sourceSets.main.runtimeClasspath
-	resourcePackages = ['com.skillbox.webshop.controller']
-	outputDir = file('swagger')
-}
