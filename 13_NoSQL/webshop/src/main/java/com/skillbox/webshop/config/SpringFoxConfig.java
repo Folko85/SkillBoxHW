@@ -12,11 +12,11 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 // Сваггер будет доступен на  http://localhost:8080/swagger-ui.html#/
 @Configuration
-@EnableSwagger2
 public class SpringFoxConfig {
     @Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
+        return new Docket(DocumentationType.OAS_30)
+                .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
