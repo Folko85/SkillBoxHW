@@ -1,38 +1,34 @@
 package com.skillbox.webshop.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.skillbox.webshop.utils.ObjectIdSerializer;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.bson.types.ObjectId;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-@Document (collection = "items")
 @Data
+@Accessors(chain = true)
 @Schema (description = "Товар")
+@Document (collection = "items")
 public class Item {
 
     @Id
-    @JsonSerialize(using = ObjectIdSerializer.class)
     @Schema (hidden = true)
-    private ObjectId id;
+    private String id;
 
-    @Schema (description = "Название товара")
+    @Schema (description = "Название товара", example = "Хлебушек")
     private String name;
 
-    @Schema (description = "Цена товара")
+    @Schema (description = "Цена товара", example = "30")
     private BigDecimal price;
 
-    @Schema (description = "Категория товара")
+    @Schema (description = "Категория товара", example = "Продукты")
     private String category;
 
-    @Schema (description = "Срок годности")
+    @Schema (description = "Срок годности", example = "2021-06-01")
     private LocalDate bestBefore;
 
 }

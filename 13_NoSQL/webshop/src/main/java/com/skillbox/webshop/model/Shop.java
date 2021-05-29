@@ -1,31 +1,29 @@
 package com.skillbox.webshop.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.skillbox.webshop.utils.ObjectIdSerializer;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import org.bson.types.ObjectId;
+import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-@Document (collection = "shops")
 @Data
-@Schema (description = "Магазин")
+@Accessors(chain = true)
+@Document(collection = "shops")
 public class Shop {
 
     @Id
-    @JsonSerialize(using = ObjectIdSerializer.class)
-    @Schema (hidden = true)
-    private ObjectId id;
+    private String id;
 
-    @Schema (description = "Название магазина")
     private String name;
 
-    @Schema (description = "Адрес магазина")
     private String address;
 
-    private Map<Item, Integer> items;
+                   //По условию задания количество товара не учитываем
+                  // Эта аннотация делает список товаров - ссылками на документы коллекции items,
+    @DBRef        // что является плохим тоном для MongoDB однако необходимо нам для тренировки навыков))
+    private List<Item> items = new ArrayList<>();
 
 }

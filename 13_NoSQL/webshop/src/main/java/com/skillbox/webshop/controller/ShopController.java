@@ -1,6 +1,8 @@
 package com.skillbox.webshop.controller;
 
-import com.skillbox.webshop.model.Item;
+import com.skillbox.webshop.dto.ShopModel;
+import com.skillbox.webshop.exception.EntityNotFoundException;
+import com.skillbox.webshop.mapper.ShopMapper;
 import com.skillbox.webshop.model.Shop;
 import com.skillbox.webshop.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,58 +22,63 @@ public class ShopController {
         this.shopService = shopService;
     }
 
-    @GetMapping()
-    @Operation (summary = "Получить список магазинов")
-    public List<Shop> getAllShops() {
+    @GetMapping("all")
+    @Operation(summary = "Получить список магазинов")
+    public List<ShopModel> getAllShops() {
         return shopService.getAllShops();
     }
 
     @GetMapping("/{id}")
-    @Operation (summary = "Получить информацию по конкретному магазину")
+    @Operation(summary = "Получить информацию по конкретному магазину")
     public Shop getCurrentShop(@PathVariable String id) {
         return shopService.getCurrentShop(id);
     }
 
+    /**
+     * ToDo: Это надо реализовать
+     */
     // а также, требуемая по заданию статистика для магазина
     @GetMapping("/{id}/info")
     @Operation(summary = "Статистика магазина")
     public String getStatisticsForShop(@PathVariable String shopId) {
-        return "";
+        return shopService.getStatisticsForShop();
     }
 
     @PostMapping(value = "/create")
-    @Operation (summary = "Добавить магазин в список")
-    public Shop addShop(@RequestBody Shop shop) {
-        return shopService.saveShop(shop);
+    @Operation(summary = "Добавить магазин в список")
+    public ShopModel addShop(@RequestBody ShopModel shopModel) {
+        return shopService.saveShop(ShopMapper.reverseMap(shopModel));
     }
 
     // Хоть запрос ограничивается переменными и не содержит тела, но суть запроса в добавлении информации, поэтому post
-    // Этот метод будет выставлять товар в количестве amount в магазин
+    // Этот метод будет выставлять товар в магазин
     @PostMapping("/expose")
-    @Operation (summary = "Добавить товар в количестве amount в магазин")
-    public List<Item> exposeItemToShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
-
-        return shopService.saveItemToShop(shopId, itemId, amount);
+    @Operation(summary = "Добавить товар в магазин")
+    public String exposeItemToShop(@RequestParam String shopId, @RequestParam String itemId) {
+        return shopService.saveItemToShop(shopId, itemId);
     }
 
-    // Этот метод будет изменять количество товара в магазине
-    @PutMapping("/expose/update")
-    @Operation (summary = "Изменить количество товара в магазине")
-    public List<Item> changeItemInShop(@RequestParam String shopId, @RequestParam String itemId, @RequestParam String amount) {
-        // some doing
-        return shopService.saveItemToShop(shopId, itemId, amount);
+    @PutMapping("/update")
+    @Operation(summary = "Изменить данные магазина")
+    public ShopModel updateShopInfo(@RequestBody ShopModel shopModel) {
+        if (shopModel.getId() == null) {
+            throw new EntityNotFoundException("Идентификатор изменяемой сущности не может быть null");
+        } else {
+            Shop existingShop = shopService.getCurrentShop(shopModel.getId());
+            existingShop = existingShop.setName(shopModel.getName()).setAddress(shopModel.getAddress());
+            return shopService.saveShop(existingShop);
+        }
     }
 
-    @PutMapping("/{id}/update")
-    @Operation (summary = "Изменить данные магазина")
-    public Shop updateShopInfo(@PathVariable String id, @RequestBody Shop shop) {
-        // some doing
-        return shopService.saveShop(shop);
-    }
-
-    @DeleteMapping("/{id}")
-    @Operation (summary = "Удалить магазин из списка")
+    @DeleteMapping("/delete/{id}")
+    @Operation(summary = "Удалить магазин из списка")
     public void removeShop(@PathVariable String id) {
-            shopService.deleteShop(id);
+        shopService.deleteShop(id);
+    }
+
+    @DeleteMapping("/delete/item")
+    @Operation(summary = "Удалить товар из магазина")
+    public void removeItemFromShop(@RequestParam String itemId, @RequestParam String shopId) {
+        shopService.deleteItemFromShop(itemId, shopId);
     }
 }
