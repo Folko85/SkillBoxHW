@@ -6,7 +6,6 @@ import lombok.experimental.Accessors;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -23,7 +22,7 @@ public class Item {
     private String name;
 
     @Schema (description = "Цена товара", example = "30")
-    private BigDecimal price;
+    private Double price;
 
     @Schema (description = "Категория товара", example = "Продукты")
     private String category;

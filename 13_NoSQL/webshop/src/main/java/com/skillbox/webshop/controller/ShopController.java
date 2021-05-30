@@ -7,6 +7,7 @@ import com.skillbox.webshop.model.Shop;
 import com.skillbox.webshop.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.catalina.mapper.Mapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,18 +31,15 @@ public class ShopController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить информацию по конкретному магазину")
-    public Shop getCurrentShop(@PathVariable String id) {
-        return shopService.getCurrentShop(id);
+    public ShopModel getCurrentShop(@PathVariable String id) {
+        return ShopMapper.map(shopService.getCurrentShop(id)) ;
     }
 
-    /**
-     * ToDo: Это надо реализовать
-     */
     // а также, требуемая по заданию статистика для магазина
-    @GetMapping("/{id}/info")
+    @GetMapping("/{shopId}/info")
     @Operation(summary = "Статистика магазина")
     public String getStatisticsForShop(@PathVariable String shopId) {
-        return shopService.getStatisticsForShop();
+        return shopService.getStatisticsForShop(shopId);
     }
 
     @PostMapping(value = "/create")

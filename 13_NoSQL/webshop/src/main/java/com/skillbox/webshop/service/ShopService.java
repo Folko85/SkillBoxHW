@@ -6,6 +6,7 @@ import com.skillbox.webshop.exception.EntityNotFoundException;
 import com.skillbox.webshop.mapper.ShopMapper;
 import com.skillbox.webshop.model.Item;
 import com.skillbox.webshop.model.Shop;
+import com.skillbox.webshop.repository.ItemRepository;
 import com.skillbox.webshop.repository.ShopRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +17,11 @@ import java.util.stream.Collectors;
 public class ShopService {
 
     private final ShopRepository shopRepository;
-    private final ItemService itemService;
+    private final ItemRepository itemRepository;
 
-    public ShopService(ShopRepository shopRepository, ItemService itemService) {
+    public ShopService(ShopRepository shopRepository, ItemRepository itemRepository) {
         this.shopRepository = shopRepository;
-        this.itemService = itemService;
+        this.itemRepository = itemRepository;
     }
 
     public List<ShopModel> getAllShops() {
@@ -36,10 +37,10 @@ public class ShopService {
     }
 
     public String saveItemToShop(String shopId, String itemId) {
-        Item existingItem = itemService.getItemById(itemId);
+        Item existingItem = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException("Товар не найден"));
         Shop existingShop = this.getCurrentShop(shopId);
 
-        if (existingShop.getItems().contains(existingItem)){
+        if (existingShop.getItems().contains(existingItem)) {
             throw new DuplicateEntityException("Такой товар уже выставлен в этот магазин");
         }
         existingShop.getItems().add(existingItem);
@@ -56,9 +57,9 @@ public class ShopService {
     }
 
     public void deleteItemFromShop(String itemId, String shopId) {
-        Item existingItem = itemService.getItemById(itemId);
+        Item existingItem = itemRepository.findById(itemId).orElseThrow(() -> new EntityNotFoundException("Товар не найден"));
         Shop existingShop = this.getCurrentShop(shopId);
-        if (existingShop.getItems().contains(existingItem)){
+        if (existingShop.getItems().contains(existingItem)) {
             existingShop.getItems().remove(existingItem);
             this.saveShop(existingShop);
         } else {
@@ -66,15 +67,24 @@ public class ShopService {
         }
     }
 
-    public String getStatisticsForShop() {
-        /**
-         *      *  Команда должна выводить для каждого магазина:
-         *      *
-         *      * общее количество наименований товаров,
-         *      * среднюю цену товаров,
-         *      * самый дорогой и самый дешевый товар,
-         *      * количество товаров дешевле 100 рублей.
-         */
-        return "";
+    public String getStatisticsForShop(String shopId) {
+        Shop currentShop = shopRepository.findById(shopId).orElseThrow(() -> new EntityNotFoundException("Магазин не найден"));
+        int count = currentShop.getItems().size();
+        if (count == 0) {
+            return "В магазине нет товаров";
+        }
+        Double average = shopRepository.averagePriceOfItems(shopId).orElse(0D);
+        Double maxPrice = shopRepository.findMostExpensive(shopId).orElse(0D);
+        Item mostExpensiveItem = itemRepository.findByPrice(maxPrice);
+        Double minPrice = shopRepository.findChipest(shopId).orElse(0D);
+        Item cheapestItem = itemRepository.findByPrice(minPrice);
+        long cheapItemCount = currentShop.getItems().stream().filter(item -> item.getPrice() < 100D).count();
+
+
+        return "В магазине " + currentShop.getName() + " всего товаров: " + count + ";\n" +
+                "Средняя цена товаров: " + average + ";\n" +
+                "Самый дорогой товар: " + mostExpensiveItem.getName() + ";\n" +
+                "Самый дешевый товар: " + cheapestItem.getName() + ";\n" +
+                "Количество товаров дешевле 100 рублей: " + cheapItemCount + ";\n";
     }
 }
