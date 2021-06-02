@@ -7,7 +7,6 @@ import com.skillbox.webshop.model.Shop;
 import com.skillbox.webshop.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.catalina.mapper.Mapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +22,7 @@ public class ShopController {
         this.shopService = shopService;
     }
 
-    @GetMapping("all")
+    @GetMapping("/all")
     @Operation(summary = "Получить список магазинов")
     public List<ShopModel> getAllShops() {
         return shopService.getAllShops();
