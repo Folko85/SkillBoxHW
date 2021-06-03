@@ -48,9 +48,16 @@ public class TaskService {
     }
 
     public void deleteAll() {
-        ArrayList<Task> tasks = (ArrayList<Task>) taskRepository.findAll();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User userDetail = (User) auth.getPrincipal();
+        List<Task> tasks = taskRepository.findAll().stream()
+                .filter(t -> t.getUser().getId().equals(userDetail.getId()))
+                .collect(Collectors.toList());
         if (tasks.isEmpty()) {
-            throw new EntityNotFoundException("Task is not exist");
-        } else taskRepository.deleteAll();
+            throw new EntityNotFoundException("Tasks is not exist");
+        } else{
+            tasks.forEach(task -> taskRepository.deleteById(task.getId()));
+        }
+
     }
 }
