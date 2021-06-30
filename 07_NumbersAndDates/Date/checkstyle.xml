@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<!DOCTYPE module PUBLIC
+        "-//Checkstyle//DTD Checkstyle Configuration 1.3//EN"
+        "https://checkstyle.org/dtds/configuration_1_3.dtd">
+
+<!-- commons lang customization of default Checkstyle behavior -->
+<module name="Checker">
+    <property name="severity" value="warning"/>
+    <module name="FileTabCharacter">
+        <property name="fileExtensions" value="java"/>
+    </module>
+
+    <module name="TreeWalker">
+
+        <module name="LocalVariableName">
+            <message key="name.invalidPattern"
+                     value="Неверное наименование локальной переменной - ''{0}'', имя переменной должно удовлетворять регулярному выражению - ''{1}'', пример: carsAmount"/>
+        </module>
+
+        <module name="ConstantName">
+            <message key="name.invalidPattern"
+                     value="Неверное наименование константы - ''{0}'', имя константы должно удовлетворять регулярному выражению - ''{1}'', пример: THIS_IS_CONSTANT "/>
+        </module>
+
+        <module name="MethodName">
+            <property name="format" value="^[a-z](_?[a-zA-Z0-9]+)*$"/>
+            <property name="allowClassName" value="false"/>
+            <message key="name.invalidPattern"
+                     value="Неверное наименование методы - ''{0}'', имя метода должно удовлетворять регулярному выражению - ''{1}'', пример: getAmount() "/>
+        </module>
+
+        <module name="MethodLength">
+            <property name="tokens" value="METHOD_DEF"/>
+            <property name="max" value="50"/>
+            <property name="countEmpty" value="false"/>
+            <message key="maxLen.method"
+                     value="Количество строк в методе {0,number,integer} (без учета пустых строк) первышает допустимое количество в {1,number,integer} строк. Совет:разделите метод на несколько"/>
+        </module>
+
+        <module name="EmptyBlock"/>
+
+        <module name="AvoidNestedBlocks">
+            <message key="block.nested" value="Избегайте вложенных блоков. Удалите лишние '{ }'."/>
+        </module>
+
+        <module name="NeedBraces">
+            <message key="needBraces" value="тело ''{0}'' должно быть заключено в '''{}'''"/>
+        </module>
+
+        <module name="UnusedImports">
+            <message key="import.unused"
+                     value="Неиспользуемый импорт класса - {0}. Для устранение удалите лишние импорты воспользовавшись сочетаниям клавиш CTRL+ALT+O / Cmd+Option+O"/>
+        </module>
+    </module>
+</module>
