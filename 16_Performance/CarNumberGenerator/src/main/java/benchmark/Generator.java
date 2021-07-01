@@ -1,30 +1,20 @@
 package benchmark;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
-public class Generator implements Runnable {
+public class Generator {
 
-    static char letters[] = {'У', 'К', 'Е', 'Н', 'Х', 'В', 'А', 'Р', 'О', 'С', 'М', 'Т'};
+    static char[] letters = {'У', 'К', 'Е', 'Н', 'Х', 'В', 'А', 'Р', 'О', 'С', 'М', 'Т'};
 
-    private List<Integer> regions;
+    private int region;
 
-    private int threadNumber;
-
-    public Generator(List<Integer> regions, int threadNumber) {
-        this.regions = regions;
-        this.threadNumber = threadNumber;
-    }
-
-    @Override
-    public void run() {
-        try {
-            newGenerate(regions, threadNumber);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public Generator(int regions) {
+        this.region = regions;
     }
 
     public static void oldGenerate() throws IOException {
@@ -48,29 +38,28 @@ public class Generator implements Runnable {
         writer.close();
     }
 
-    public static void newGenerate(List<Integer> regions, int threadNumber) throws IOException {
-        PrintWriter writer = new PrintWriter("res/numbers" + threadNumber + ".txt");
-
-        for (int regionCode : regions) {
-            StringBuilder builder = new StringBuilder();
-            for (int number = 1; number < 1000; number++) {
-                for (char firstLetter : letters) {
-                    for (char secondLetter : letters) {
-                        for (char thirdLetter : letters) {
-                            builder.append(firstLetter);
-                            builder.append(newPadNumber(number, 3));
-                            builder.append(secondLetter);
-                            builder.append(thirdLetter);
-                            builder.append(newPadNumber(regionCode, 2));
-                            builder.append("\n");
+    public static void newGenerate(int regionCode) {
+        try (PrintWriter writer = new PrintWriter("res/numbers" + regionCode + ".txt")) {
+                StringBuilder builder = new StringBuilder();
+                for (int number = 1; number < 1000; number++) {
+                    for (char firstLetter : letters) {
+                        for (char secondLetter : letters) {
+                            for (char thirdLetter : letters) {
+                                builder.append(firstLetter);
+                                builder.append(newPadNumber(number, 3));
+                                builder.append(secondLetter);
+                                builder.append(thirdLetter);
+                                builder.append(newPadNumber(regionCode, 2));
+                                builder.append("\n");
+                            }
                         }
                     }
                 }
-            }
-            writer.write(builder.toString());
+                writer.write(builder.toString());
+            writer.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
         }
-        writer.flush();
-        writer.close();
     }
 
     private static String padNumber(int number, int numberLength) {

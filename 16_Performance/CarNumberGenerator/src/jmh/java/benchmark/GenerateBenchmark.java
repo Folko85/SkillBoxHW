@@ -1,12 +1,11 @@
 package benchmark;
 
 import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.runner.RunnerException;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import static benchmark.Loader.REGIONS;
 
 @BenchmarkMode(Mode.AverageTime) // нас интересует среднее время
 @Warmup(iterations = 5) // несколько итераций будет занимать прогрев
@@ -16,19 +15,9 @@ import java.util.concurrent.TimeUnit;
 public class GenerateBenchmark {
 
 
-    public static void main(String... args) throws IOException, RunnerException {
+    public static void main(String... args) throws IOException {
         org.openjdk.jmh.Main.main(args);
     }
-
-    List<Integer> regions = new ArrayList<>();
-
-    @Setup
-    public void init() {
-        for (int i = 1; i < Loader.REGIONS; i++){
-            regions.add(i);
-        }
-    }
-
 
     @Benchmark
     @Fork(1)
@@ -38,7 +27,9 @@ public class GenerateBenchmark {
 
     @Benchmark
     @Fork(1)
-    public void testNewGenerate() throws IOException {
-        Generator.newGenerate(regions, 0);
+    public void testNewGenerate() {
+        for (int i = 1; i < REGIONS; i++) {
+            Generator.newGenerate(i);
+        }
     }
 }

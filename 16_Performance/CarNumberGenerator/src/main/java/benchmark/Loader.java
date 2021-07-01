@@ -2,6 +2,9 @@ package benchmark;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class Loader {
 
@@ -9,47 +12,32 @@ public class Loader {
 
     public static void main(String[] args) throws Exception {
 
-        List<Integer> regions = new ArrayList<>();
-        for (int i = 1; i < REGIONS; i++) {
-            regions.add(i);
-        }
         long start = System.currentTimeMillis();
         Generator.oldGenerate();
         System.out.println((System.currentTimeMillis() - start) + " ms");
         start = System.currentTimeMillis();
-        /**
-         * для многопоточки взял логику из задания 13.1 (11.1 по старому) так как она почти подходит и почему бы и нет
-         */
-        Generator.newGenerate(regions, 9);
+         // разница между старым и новым методами настолько большая, что даже генерируя в 10 раз больше номеров мы в несколько раз быстрее
+        for (int i = 1; i < REGIONS; i++) {
+            Generator.newGenerate(i);
+        }
         System.out.println((System.currentTimeMillis() - start) + " ms");
+
         System.out.println("Теперь проверим многопоточность");
         start = System.currentTimeMillis();
-        int processorsCount = Runtime.getRuntime().availableProcessors();
-        System.out.println("Ядер задействовано: " + processorsCount);
+        int threadCount = Runtime.getRuntime().availableProcessors();
+        System.out.println("Ядер задействовано: " + threadCount);
 
-        int regionsPerThread = regions.size() / processorsCount;  // количество регионов на поток
-        int oneMoreSizeCount = regions.size() % processorsCount;  // количество потоков, где на 1 регион больше
-        int bound = oneMoreSizeCount * (regionsPerThread + 1);
-        List<Integer> subListOneMore = regions.subList(0, bound); // здесь все регионы для увеличенных потоков
-        List<Integer> subListStandard = regions.subList(bound, regions.size());
-        List<Thread> threads = new ArrayList<>();
+        ExecutorService pool = Executors.newFixedThreadPool(threadCount);
+        List<Future<?>> futures = new ArrayList<>();
 
-        for (int i = 0; i < processorsCount; i++) {
-            int lowBound = (i < oneMoreSizeCount) ? i * (regionsPerThread + 1) : (i - oneMoreSizeCount) * regionsPerThread;
-            int upBound = (i < oneMoreSizeCount) ? lowBound + regionsPerThread + 1 : lowBound + regionsPerThread;
-            List<Integer> perThread = (i < oneMoreSizeCount) ? subListOneMore.subList(lowBound, upBound) : subListStandard.subList(lowBound, upBound);
-
-            Generator generator = new Generator(perThread, i);
-            Thread thread = new Thread(generator);
-
-            thread.start();
-            threads.add(thread);
+        for (int i = 11; i < 10 + REGIONS; i++) {
+            int region = i;
+            futures.add(pool.submit(() -> Generator.newGenerate(region)));
         }
-        for (int i = 0; i < threads.size(); i++) {
-            threads.get(i).join();
+        for (Future<?> future : futures) {
+            future.get();
         }
+        pool.shutdown();  // ждём выполнения всех поставленных задач и отключаемся
         System.out.println((System.currentTimeMillis() - start) + " ms");
     }
-
-
 }
