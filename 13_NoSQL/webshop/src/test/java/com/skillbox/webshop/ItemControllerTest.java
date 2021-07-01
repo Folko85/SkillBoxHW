@@ -1,10 +1,5 @@
 package com.skillbox.webshop;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoDriverInformation;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.internal.MongoClientImpl;
 import com.skillbox.webshop.model.Item;
 import com.skillbox.webshop.model.Shop;
 import com.skillbox.webshop.repository.ItemRepository;
@@ -12,34 +7,15 @@ import com.skillbox.webshop.repository.ShopRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.testcontainers.containers.MongoDBContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.DockerImageName;
 
 import java.util.Arrays;
 
 
-@Testcontainers
-@SpringBootTest(classes = {WebshopApplication.class, ItemControllerTest.SpringMongoConfig.class})
+@SpringBootTest(classes = {WebshopApplication.class, ApplicationTest.SpringMongoConfig.class})
 class ItemControllerTest extends ApplicationTest {
-
-    @Container
-    public static MongoDBContainer mongoDBContainer = new MongoDBContainer(DockerImageName.parse("mongo:4.1.1"));
-
-    @DynamicPropertySource
-    static void mongoDbProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.data.mongodb.uri", mongoDBContainer::getReplicaSetUrl);
-    }
 
     @Autowired
     ItemRepository itemRepository;
@@ -180,34 +156,6 @@ class ItemControllerTest extends ApplicationTest {
                 .get("/item/list/{shopId}", id)
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
-    }
-
-
-    @Configuration
-    public static class SpringMongoConfig {
-
-        public String getDatabaseName() {
-            return "test";
-        }
-
-        @Bean
-        public MongoClient mongoClient() {
-            MongoClientSettings settings = MongoClientSettings.builder()
-                    .applyConnectionString(new ConnectionString(mongoDBContainer.getReplicaSetUrl()))
-            .build();
-            MongoDriverInformation information = MongoDriverInformation.builder().build();
-            return new MongoClientImpl(settings, information);
-        }
-
-        @Bean
-        public SimpleMongoClientDatabaseFactory mongoDbFactory() {
-            return new SimpleMongoClientDatabaseFactory(mongoClient(), getDatabaseName());
-        }
-
-        @Bean
-        public MongoTemplate mongoTemplate() {
-            return new MongoTemplate(mongoDbFactory());
-        }
     }
 
 }
