@@ -5,6 +5,8 @@ import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,24 +21,30 @@ public class Loader {
     private static HashMap<Voter, Integer> voterCounts = new HashMap<>();
 
     public static void main(String[] args) throws Exception {
-        String fileName = "res/data-1M.xml";
+        String fileName = "res/data-18M.xml";
 
-        parseFile(fileName);
+        SAXParserFactory factory = SAXParserFactory.newInstance();
+        SAXParser parser = factory.newSAXParser();
+        XMLHandler handler = new XMLHandler();
+        parser.parse(new File(fileName), handler);
+        handler.duplicatedVoters();
 
-        //Printing results
-        System.out.println("Voting station work times: ");
-        for (Integer votingStation : voteStationWorkTimes.keySet()) {
-            WorkTime workTime = voteStationWorkTimes.get(votingStation);
-            System.out.println("\t" + votingStation + " - " + workTime);
-        }
-
-        System.out.println("Duplicated voters: ");
-        for (Voter voter : voterCounts.keySet()) {
-            Integer count = voterCounts.get(voter);
-            if (count > 1) {
-                System.out.println("\t" + voter + " - " + count);
-            }
-        }
+//        parseFile(fileName);
+//
+//        //Printing results
+//        System.out.println("Voting station work times: ");
+//        for (Integer votingStation : voteStationWorkTimes.keySet()) {
+//            WorkTime workTime = voteStationWorkTimes.get(votingStation);
+//            System.out.println("\t" + votingStation + " - " + workTime);
+//        }
+//
+//        System.out.println("Duplicated voters: ");
+//        for (Voter voter : voterCounts.keySet()) {
+//            Integer count = voterCounts.get(voter);
+//            if (count > 1) {
+//                System.out.println("\t" + voter + " - " + count);
+//            }
+//        }
     }
 
     private static void parseFile(String fileName) throws Exception {
