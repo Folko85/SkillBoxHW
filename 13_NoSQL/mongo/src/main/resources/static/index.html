@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Данные о студентах</title>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body style="background:#fcfcee;">
+<header style="text-align:center;"><h1>Students</h1></header>
+<form align="center" id="uploadForm" enctype="multipart/form-data">
+    <input type="file" id="file" name="file">
+    <input type=button onclick="uploadFile()" value=Загрузить>
+</form></br>
+<table align="center" id="students-result" border="1"></table><br>
+<script src="/js/requests.js"></script>
+<script src="/js/view.js"></script>
+</body>
+</html>
