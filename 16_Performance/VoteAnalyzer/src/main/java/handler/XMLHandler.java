@@ -20,7 +20,7 @@ public class XMLHandler extends DefaultHandler {
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
         try {
             if (qName.equals("voter") && voter == null) {
                 Date birthDay = birthDayFormat.parse(attributes.getValue("birthDay"));
@@ -36,7 +36,7 @@ public class XMLHandler extends DefaultHandler {
     }
 
     @Override
-    public void endElement(String uri, String localName, String qName) throws SAXException {
+    public void endElement(String uri, String localName, String qName) {
         if (qName.equals("voter")) {
             voter = null;
         }

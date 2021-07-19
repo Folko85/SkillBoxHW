@@ -23,7 +23,7 @@ public class DOMHandler {
         for (Voter voter : voterCounts.keySet()) {
             Integer count = voterCounts.get(voter);
             if (count > 1) {
-                System.out.println("\t" + voter + " - " + count);
+                System.out.println(voter + " - " + count);
             }
         }
     }
