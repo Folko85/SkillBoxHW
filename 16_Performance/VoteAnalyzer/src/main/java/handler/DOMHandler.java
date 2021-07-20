@@ -19,7 +19,6 @@ public class DOMHandler {
     private static HashMap<Voter, Integer> voterCounts = new HashMap<>();
 
     public static void duplicatedVotersDOM() {
-        System.out.println("Duplicated voters: ");
         for (Voter voter : voterCounts.keySet()) {
             Integer count = voterCounts.get(voter);
             if (count > 1) {
