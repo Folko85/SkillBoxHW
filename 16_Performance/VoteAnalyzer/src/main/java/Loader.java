@@ -22,13 +22,6 @@ public class Loader {
         SAXParserFactory factory = SAXParserFactory.newInstance();
         SAXParser parser = factory.newSAXParser();
 
-        SuperHandler superHandler = new SuperHandler();
-        parser.parse(new File(fileName), superHandler);
-        superHandler.duplicatedVoters();
-
-        usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
-        System.out.println("Super-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
-
         XMLHandler handler = new XMLHandler();
         parser.parse(new File(fileName), handler);
         handler.duplicatedVoters();
@@ -36,5 +29,11 @@ public class Loader {
         usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
         System.out.println("SAX-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
 
+        SuperHandler superHandler = new SuperHandler();
+        parser.parse(new File(fileName), superHandler);
+        superHandler.duplicatedVoters();
+
+        usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
+        System.out.println("Super-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
     }
 }
