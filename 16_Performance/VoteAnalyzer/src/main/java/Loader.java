@@ -36,7 +36,5 @@ public class Loader {
         usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
         System.out.println("SAX-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
 
-
-
     }
 }

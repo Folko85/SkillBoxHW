@@ -2,19 +2,19 @@ package handler;
 
 import model.Voter;
 import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 import repository.DBConnection;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
 
 public class SuperHandler extends DefaultHandler {
 
     private StringBuilder sqlRequest = new StringBuilder();
     private Voter voter;
     private static SimpleDateFormat birthDayFormat = new SimpleDateFormat("yyyy.MM.dd");
+    private int counter = 0;
 
     @Override
     public void startDocument() {
@@ -23,9 +23,8 @@ public class SuperHandler extends DefaultHandler {
 
     @Override
     public void endDocument() {
-        sqlRequest.deleteCharAt(sqlRequest.length() - 1);
-        sqlRequest.deleteCharAt(sqlRequest.length() - 1);
-        sqlRequest.append(";");
+        if (counter > 0)
+            finishSQLRequest();
         try {
             DBConnection.writeVoters(sqlRequest);
         } catch (SQLException throwables) {
@@ -41,8 +40,16 @@ public class SuperHandler extends DefaultHandler {
                 Date birthDay = birthDayFormat.parse(attributes.getValue("birthDay"));
                 voter = new Voter(attributes.getValue("name"), birthDay);
             } else if (qName.equals("visit") && voter != null) {
-                    sqlRequest.append("('").append(voter.getName()).append("', '")
-                            .append(birthDayFormat.format(voter.getBirthDay())).append("'), ");
+                counter++;
+                sqlRequest.append("('").append(voter.getName()).append("', '")
+                        .append(birthDayFormat.format(voter.getBirthDay())).append("'), ");
+                if (counter >= 100000) {
+                    finishSQLRequest();
+                    DBConnection.writeVoters(sqlRequest);
+                    sqlRequest.setLength(0);
+                    sqlRequest.append("INSERT INTO voter_count(name, birthDate) VALUES");
+                    counter = 0;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -59,5 +66,11 @@ public class SuperHandler extends DefaultHandler {
 
     public void duplicatedVoters() throws SQLException {
         DBConnection.printVoterCounts();
+    }
+
+    public void finishSQLRequest() {
+        sqlRequest.deleteCharAt(sqlRequest.length() - 1);
+        sqlRequest.deleteCharAt(sqlRequest.length() - 1);
+        sqlRequest.append(";");
     }
 }
