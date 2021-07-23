@@ -14,6 +14,7 @@ public class Loader {
         long usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory();
 
         DOMHandler.parseFileDOM(fileName);
+        DOMHandler.workTimesVotingDOM();
         DOMHandler.duplicatedVotersDOM();
 
         usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
@@ -29,11 +30,11 @@ public class Loader {
         usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
         System.out.println("SAX-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
 
-        SuperHandler superHandler = new SuperHandler();
-        parser.parse(new File(fileName), superHandler);
-        superHandler.duplicatedVoters();
-
-        usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
-        System.out.println("Super-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
+//        SuperHandler superHandler = new SuperHandler();
+//        parser.parse(new File(fileName), superHandler);
+//        superHandler.duplicatedVoters();
+//
+//        usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
+//        System.out.println("Super-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
     }
 }
