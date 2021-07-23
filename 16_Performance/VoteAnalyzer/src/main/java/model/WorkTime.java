@@ -1,6 +1,5 @@
 package model;
 
-import java.util.Date;
 import java.util.TreeSet;
 
 public class WorkTime {
@@ -14,8 +13,7 @@ public class WorkTime {
         periods = new TreeSet<>();
     }
 
-    public void addVisitTime(long visitTime) {
-        Date visit = new Date(visitTime);
+    public void addVisitTime(long visit) {
         TimePeriod newPeriod = new TimePeriod(visit, visit);
         for (TimePeriod period : periods) {
             if (period.compareTo(newPeriod) == 0) {
@@ -27,13 +25,13 @@ public class WorkTime {
     }
 
     public String toString() {
-        String line = "";
+        StringBuilder line = new StringBuilder();
         for (TimePeriod period : periods) {
-            if (!line.isEmpty()) {
-                line += ", ";
+            if (line.length() != 0) {
+                line.append(", ");
             }
-            line += period;
+            line.append(period);
         }
-        return line;
+        return line.toString();
     }
 }

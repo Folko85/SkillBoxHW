@@ -11,12 +11,14 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.HashMap;
 
 public class DOMHandler {
 
-    private static SimpleDateFormat birthDayFormat = new SimpleDateFormat("yyyy.MM.dd");
+    private static DateTimeFormatter birthDayFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private static SimpleDateFormat visitDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
     private static HashMap<Integer, WorkTime> voteStationWorkTimes = new HashMap<>();
     private static HashMap<Voter, Integer> voterCounts = new HashMap<>();
@@ -46,7 +48,7 @@ public class DOMHandler {
         fixWorkTimes(doc);
     }
 
-    private static void findEqualVoters(Document doc) throws Exception {
+    private static void findEqualVoters(Document doc) {
         NodeList voters = doc.getElementsByTagName("voter");
         int votersCount = voters.getLength();
         for (int i = 0; i < votersCount; i++) {
@@ -54,8 +56,7 @@ public class DOMHandler {
             NamedNodeMap attributes = node.getAttributes();
 
             String name = attributes.getNamedItem("name").getNodeValue();
-            Date birthDay = birthDayFormat
-                    .parse(attributes.getNamedItem("birthDay").getNodeValue());
+            LocalDate birthDay = LocalDate.parse(attributes.getNamedItem("birthDay").getNodeValue(), birthDayFormat);
 
             Voter voter = new Voter(name, birthDay);
             Integer count = voterCounts.get(voter);

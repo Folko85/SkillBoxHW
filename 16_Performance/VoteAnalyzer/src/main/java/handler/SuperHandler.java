@@ -6,14 +6,14 @@ import org.xml.sax.helpers.DefaultHandler;
 import repository.DBConnection;
 
 import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class SuperHandler extends DefaultHandler {
 
     private StringBuilder sqlRequest = new StringBuilder();
     private Voter voter;
-    private static SimpleDateFormat birthDayFormat = new SimpleDateFormat("yyyy.MM.dd");
+    private static DateTimeFormatter birthDayFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private int counter = 0;
 
     @Override
@@ -37,7 +37,7 @@ public class SuperHandler extends DefaultHandler {
     public void startElement(String uri, String localName, String qName, Attributes attributes) {
         try {
             if (qName.equals("voter") && voter == null) {
-                Date birthDay = birthDayFormat.parse(attributes.getValue("birthDay"));
+                LocalDate birthDay = LocalDate.parse(attributes.getValue("birthDay"), birthDayFormat);
                 voter = new Voter(attributes.getValue("name"), birthDay);
             } else if (qName.equals("visit") && voter != null) {
                 counter++;

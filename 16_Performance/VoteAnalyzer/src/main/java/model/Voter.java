@@ -1,43 +1,40 @@
 package model;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.Objects;
 
 public class Voter {
 
     private String name;
-    private Date birthDay;
+    private LocalDate birthDay;
 
-    public Voter(String name, Date birthDay) {
+    public Voter(String name, LocalDate birthDay) {
         this.name = name;
         this.birthDay = birthDay;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        Voter voter = (Voter) obj;
-        return name.equals(voter.name) && birthDay.equals(voter.birthDay);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Voter voter = (Voter) o;
+        return Objects.equals(name, voter.name) && Objects.equals(birthDay, voter.birthDay);
     }
 
     @Override
     public int hashCode() {
-        long code = name.hashCode() + birthDay.hashCode();
-        while (code > Integer.MAX_VALUE) {
-            code = code / 10;
-        }
-        return (int) code;
+        return Objects.hash(name, birthDay);
     }
 
     public String toString() {
-        SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy.MM.dd");
-        return name + " (" + dayFormat.format(birthDay) + ")";
+        return name + " (" + birthDay + ")";
     }
 
     public String getName() {
         return name;
     }
 
-    public Date getBirthDay() {
+    public LocalDate getBirthDay() {
         return birthDay;
     }
 }

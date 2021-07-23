@@ -1,5 +1,4 @@
 import handler.DOMHandler;
-import handler.SuperHandler;
 import handler.XMLHandler;
 
 import javax.xml.parsers.SAXParser;
@@ -25,7 +24,8 @@ public class Loader {
 
         XMLHandler handler = new XMLHandler();
         parser.parse(new File(fileName), handler);
-        handler.duplicatedVoters();
+        XMLHandler.workTimesVotingSAX();
+        handler.duplicatedVotersSAX();
 
         usage = Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory() - usage;
         System.out.println("SAX-парсер занимает памяти: " + usage/ 1_000_000 + "Mb\n");
