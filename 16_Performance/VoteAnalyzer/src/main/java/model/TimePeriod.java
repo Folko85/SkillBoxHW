@@ -1,27 +1,25 @@
 package model;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
 
 public class TimePeriod implements Comparable<TimePeriod> {
 
     private long from;
     private long to;
-    SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy.MM.dd");
+    private static long day = 86400000;
+    private static SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy.MM.dd");
+    private static SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
 
     public TimePeriod(long from, long to) {
         this.from = from;
         this.to = to;
-        if (!Instant.ofEpochMilli(from).atZone(ZoneId.systemDefault()).toLocalDate().equals(Instant.ofEpochMilli(to).atZone(ZoneId.systemDefault()).toLocalDate())) {
+        if (from / day != to / day) {
             throw new IllegalArgumentException("Dates 'from' and 'to' must be within ONE day!");
         }
     }
 
     public void appendTime(long visitTime) {
-        if (!Instant.ofEpochMilli(from).atZone(ZoneId.systemDefault()).toLocalDate()
-                .equals(Instant.ofEpochMilli(visitTime).atZone(ZoneId.systemDefault()).toLocalDate())) {
+        if (from / day != visitTime / day) {
             throw new IllegalArgumentException(
                     "Visit time must be within the same day as the current TimePeriod!");
         }
@@ -35,15 +33,14 @@ public class TimePeriod implements Comparable<TimePeriod> {
     }
 
     public String toString() {
-        SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
         return dayFormat.format(this.from) +
                 " " + timeFormat.format(this.from) + "-" + timeFormat.format(this.to);
     }
 
     @Override
     public int compareTo(TimePeriod period) {
-        LocalDate current = Instant.ofEpochMilli(from).atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate compared = Instant.ofEpochMilli(period.from).atZone(ZoneId.systemDefault()).toLocalDate();
+        Long current = from/day;
+        Long compared = period.from/day;
         return current.compareTo(compared);
     }
 }
