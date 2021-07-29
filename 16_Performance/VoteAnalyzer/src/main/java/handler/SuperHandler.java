@@ -43,7 +43,7 @@ public class SuperHandler extends DefaultHandler {
                 counter++;
                 sqlRequest.append("('").append(voter.getName()).append("', '")
                         .append(birthDayFormat.format(voter.getBirthDay())).append("'), ");
-                if (counter >= 50000) {
+                if (counter >= 10000) {
                     finishSQLRequest();
                     DBConnection.writeVoters(sqlRequest);
                     sqlRequest.setLength(0);

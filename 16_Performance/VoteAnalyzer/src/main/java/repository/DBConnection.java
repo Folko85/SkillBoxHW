@@ -18,9 +18,9 @@ public class DBConnection {
                 connection.createStatement().execute("DROP TABLE IF EXISTS voter_count");
                 connection.createStatement().execute("CREATE TABLE voter_count(" +
                     "id INT NOT NULL AUTO_INCREMENT, " +
-                    "name TINYTEXT NOT NULL, " +
+                    "name VARCHAR(50) NOT NULL, " +
                     "birthDate DATE NOT NULL, " +
-                    "PRIMARY KEY(id))");
+                    "PRIMARY KEY(id), KEY (birthDate, name(50)))");
         }
         return connection;
     }
