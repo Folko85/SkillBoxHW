@@ -45,7 +45,7 @@ public class Loader {
         LocalTime result = Instant.ofEpochMilli(time).atZone(ZoneId.systemDefault()).toLocalTime();
         LocalTime resultWrite = Instant.ofEpochMilli(parseAndWritingTime).atZone(ZoneId.systemDefault()).toLocalTime();
         LocalTime resultRead = Instant.ofEpochMilli(readTime).atZone(ZoneId.systemDefault()).toLocalTime();
-        System.out.println("И файл 1,5Гб записывается в базу данных за : " + result.getMinute()  + " минут и " + result.getSecond() + " секунд\n");
+        System.out.println("И файл 1,5Гб записывается в базу данных (вместе с созданием индекса) за : " + result.getMinute()  + " минут и " + result.getSecond() + " секунд\n");
         System.out.println("При этом время парсинга и записи в базу составляет : " + resultWrite.getMinute()  + " минут и " + resultWrite.getSecond() + " секунд\n");
         System.out.println("Время чтения из базы составляет : " + resultRead.getMinute()  + " минут и " + resultRead.getSecond() + " секунд\n");
     }

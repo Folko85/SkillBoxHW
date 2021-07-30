@@ -27,6 +27,7 @@ public class SuperHandler extends DefaultHandler {
             finishSQLRequest();
         try {
             DBConnection.writeVoters(sqlRequest);
+            DBConnection.addIndex();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
